@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
-import { User, Phone, Mail, Key, AlertCircle, CheckCircle } from 'lucide-react';
+import { User, Phone, Mail, Key, Lock, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function Register() {
   const [formData, setFormData] = useState({
     name: '',
     mobile: '',
     email: '',
+    password: '',
     referralCode: '',
   });
   const [otp, setOtp] = useState('');
@@ -144,6 +145,25 @@ export default function Register() {
                     onChange={handleChange}
                     placeholder="email@example.com"
                     className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  رمز عبور <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <Lock size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="حداقل 8 کاراکتر"
+                    className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                    minLength={8}
                   />
                 </div>
               </div>
