@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router'
 import { useAnnouncements } from '../contexts/AnnouncementContext'
 import { useAuth } from '../contexts/AuthContext'
 import { type Task, type TaskType, useTasks } from '../contexts/TaskContext'
+import { getStringOrDefault } from '../utils/typeGuards'
 
 export default function AdminPanel(): React.JSX.Element {
   const { user, logout } = useAuth()
@@ -34,18 +35,18 @@ export default function AdminPanel(): React.JSX.Element {
     deadline: '',
     priority: 'medium',
     requiresCompleteProfile: false,
-    createdBy: user?.name || '',
+    createdBy: getStringOrDefault(user?.name),
   })
 
   const [newAnnouncement, setNewAnnouncement] = useState({
     title: '',
     content: '',
-    author: user?.name || '',
+    author: getStringOrDefault(user?.name),
   })
 
   // For testing: allow any logged-in user. Restore role check for production:
   // if (!user || (user.role !== 'admin' && user.role !== 'manager'))
-  if (!user) {
+  if (user === null) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center">
         <div className="text-center">
