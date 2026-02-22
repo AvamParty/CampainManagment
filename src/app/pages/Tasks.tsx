@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Award,
   Briefcase,
@@ -15,13 +16,12 @@ import {
   Target,
   UserPlus,
   XCircle,
-  Zap
-} from 'lucide-react';
-import { motion } from 'motion/react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
-import { useAuth } from '../contexts/AuthContext';
-import { useTasks } from '../contexts/TaskContext';
+  Zap,
+} from 'lucide-react'
+import { motion } from 'motion/react'
+import { useNavigate } from 'react-router'
+import { useAuth } from '../contexts/AuthContext'
+import { useTasks } from '../contexts/TaskContext'
 
 const taskTypeIcons = {
   opinion: MessageSquare,
@@ -35,7 +35,7 @@ const taskTypeIcons = {
   distribution: Share2,
   communication: Phone,
   resource: Briefcase,
-};
+}
 
 const taskTypeLabels = {
   opinion: 'نظرسنجی',
@@ -49,7 +49,7 @@ const taskTypeLabels = {
   distribution: 'توزیع',
   communication: 'ارتباطات',
   resource: 'منابع',
-};
+}
 
 const taskTypeColors = {
   opinion: 'from-blue-500 to-cyan-500',
@@ -63,64 +63,106 @@ const taskTypeColors = {
   distribution: 'from-violet-500 to-purple-500',
   communication: 'from-blue-500 to-indigo-500',
   resource: 'from-emerald-500 to-green-500',
-};
+}
 
-export default function Tasks() {
-  const { user } = useAuth();
-  const { tasks, userTasks, isLoading } = useTasks();
-  const navigate = useNavigate();
+export default function Tasks(): React.JSX.Element | null {
+  const { user } = useAuth()
+  const { tasks, userTasks, isLoading } = useTasks()
+  const navigate = useNavigate()
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterType, setFilterType] = useState<'all' | 'available' | 'my-tasks'>('all');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [filterPriority, setFilterPriority] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterType, setFilterType] = useState<
+    'all' | 'available' | 'my-tasks'
+  >('all')
+  const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [filterPriority, setFilterPriority] = useState<string>('all')
 
-  if (!user) return null;
+  if (!user) return null
 
-  const myTaskIds = userTasks.filter(ut => ut.userId === user.id).map(ut => ut.taskId);
+  const myTaskIds = userTasks
+    .filter(ut => ut.userId === user.id)
+    .map(ut => ut.taskId)
 
   let filteredTasks = tasks.filter(task => {
     // Search filter
-    if (searchQuery && !task.title.includes(searchQuery) && !task.description.includes(searchQuery)) {
-      return false;
+    if (
+      searchQuery &&
+      !task.title.includes(searchQuery) &&
+      !task.description.includes(searchQuery)
+    ) {
+      return false
     }
 
     // Type filter
     if (filterType === 'available' && myTaskIds.includes(task.id)) {
-      return false;
+      return false
     }
     if (filterType === 'my-tasks' && !myTaskIds.includes(task.id)) {
-      return false;
+      return false
     }
 
     // Status filter
     if (filterStatus !== 'all') {
-      const userTask = userTasks.find(ut => ut.taskId === task.id && ut.userId === user.id);
+      const userTask = userTasks.find(
+        ut => ut.taskId === task.id && ut.userId === user.id,
+      )
       if (!userTask || userTask.status !== filterStatus) {
-        return false;
+        return false
       }
     }
 
     // Priority filter
     if (filterPriority !== 'all' && task.priority !== filterPriority) {
-      return false;
+      return false
     }
 
-    return true;
-  });
+    return true
+  })
 
   const getTaskStatus = (taskId: string) => {
-    const userTask = userTasks.find(ut => ut.taskId === taskId && ut.userId === user.id);
-    return userTask?.status;
-  };
+    const userTask = userTasks.find(
+      ut => ut.taskId === taskId && ut.userId === user.id,
+    )
+    return userTask?.status
+  }
 
   const statusIcons = {
-    'pending': { icon: Clock, color: 'text-gray-600', bg: 'bg-gray-50', gradient: 'from-gray-500 to-gray-600', label: 'در انتظار' },
-    'in-progress': { icon: Clock, color: 'text-blue-600', bg: 'bg-blue-50', gradient: 'from-blue-500 to-cyan-500', label: 'در حال انجام' },
-    completed: { icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50', gradient: 'from-green-500 to-emerald-500', label: 'تکمیل شده' },
-    approved: { icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50', gradient: 'from-green-500 to-emerald-500', label: 'تایید شده' },
-    rejected: { icon: XCircle, color: 'text-red-600', bg: 'bg-red-50', gradient: 'from-red-500 to-rose-500', label: 'رد شده' },
-  };
+    pending: {
+      icon: Clock,
+      color: 'text-gray-600',
+      bg: 'bg-gray-50',
+      gradient: 'from-gray-500 to-gray-600',
+      label: 'در انتظار',
+    },
+    'in-progress': {
+      icon: Clock,
+      color: 'text-blue-600',
+      bg: 'bg-blue-50',
+      gradient: 'from-blue-500 to-cyan-500',
+      label: 'در حال انجام',
+    },
+    completed: {
+      icon: CheckCircle,
+      color: 'text-green-600',
+      bg: 'bg-green-50',
+      gradient: 'from-green-500 to-emerald-500',
+      label: 'تکمیل شده',
+    },
+    approved: {
+      icon: CheckCircle,
+      color: 'text-green-600',
+      bg: 'bg-green-50',
+      gradient: 'from-green-500 to-emerald-500',
+      label: 'تایید شده',
+    },
+    rejected: {
+      icon: XCircle,
+      color: 'text-red-600',
+      bg: 'bg-red-50',
+      gradient: 'from-red-500 to-rose-500',
+      label: 'رد شده',
+    },
+  }
 
   return (
     <div className="min-h-screen p-4 md:p-6 lg:p-8 lg:pt-6">
@@ -154,12 +196,15 @@ export default function Tasks() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
-              <Search size={20} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search
+                size={20}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+              />
               <input
                 type="text"
                 placeholder="جستجو در وظایف..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
                 className="w-full pr-12 pl-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:border-transparent"
               />
             </div>
@@ -167,7 +212,11 @@ export default function Tasks() {
             {/* Type Filter */}
             <select
               value={filterType}
-              onChange={(e) => setFilterType(e.target.value as any)}
+              onChange={e =>
+                setFilterType(
+                  e.target.value as 'all' | 'available' | 'my-tasks',
+                )
+              }
               className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:border-transparent font-medium"
             >
               <option value="all">همه وظایف</option>
@@ -178,7 +227,7 @@ export default function Tasks() {
             {/* Status Filter */}
             <select
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
+              onChange={e => setFilterStatus(e.target.value)}
               className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:border-transparent font-medium"
             >
               <option value="all">همه وضعیت‌ها</option>
@@ -191,7 +240,7 @@ export default function Tasks() {
             {/* Priority Filter */}
             <select
               value={filterPriority}
-              onChange={(e) => setFilterPriority(e.target.value)}
+              onChange={e => setFilterPriority(e.target.value)}
               className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:border-transparent font-medium"
             >
               <option value="all">همه اولویت‌ها</option>
@@ -209,9 +258,9 @@ export default function Tasks() {
           variants={{
             visible: {
               transition: {
-                staggerChildren: 0.05
-              }
-            }
+                staggerChildren: 0.05,
+              },
+            },
           }}
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
         >
@@ -227,7 +276,9 @@ export default function Tasks() {
               >
                 <Clock size={64} className="mx-auto mb-4 text-gray-300" />
               </motion.div>
-              <p className="text-gray-500 text-lg font-medium">در حال بارگذاری وظایف...</p>
+              <p className="text-gray-500 text-lg font-medium">
+                در حال بارگذاری وظایف...
+              </p>
             </motion.div>
           ) : filteredTasks.length === 0 ? (
             <motion.div
@@ -241,28 +292,32 @@ export default function Tasks() {
               >
                 <Award size={64} className="mx-auto mb-4 text-gray-300" />
               </motion.div>
-              <p className="text-gray-500 text-lg font-medium">وظیفه‌ای یافت نشد</p>
+              <p className="text-gray-500 text-lg font-medium">
+                وظیفه‌ای یافت نشد
+              </p>
             </motion.div>
           ) : (
-            filteredTasks.map((task, index) => {
-              const status = getTaskStatus(task.id);
-              const StatusIcon = status ? statusIcons[status]?.icon : null;
-              const TypeIcon = taskTypeIcons[task.type];
-              const typeGradient = taskTypeColors[task.type];
+            filteredTasks.map(task => {
+              const status = getTaskStatus(task.id)
+              const StatusIcon = status ? statusIcons[status]?.icon : null
+              const TypeIcon = taskTypeIcons[task.type]
+              const typeGradient = taskTypeColors[task.type]
 
               return (
                 <motion.div
                   key={task.id}
                   variants={{
                     hidden: { y: 20, opacity: 0 },
-                    visible: { y: 0, opacity: 1 }
+                    visible: { y: 0, opacity: 1 },
                   }}
                   whileHover={{ y: -8, scale: 1.02 }}
                   onClick={() => navigate(`/tasks/${task.id}`)}
                   className="group bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 p-6 hover:shadow-2xl transition-all cursor-pointer relative overflow-hidden"
                 >
                   {/* Gradient overlay on hover */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${typeGradient} opacity-0 group-hover:opacity-5 transition-opacity`} />
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${typeGradient} opacity-0 group-hover:opacity-5 transition-opacity`}
+                  />
 
                   <div className="relative">
                     <div className="flex items-start justify-between mb-4">
@@ -275,7 +330,9 @@ export default function Tasks() {
                           <TypeIcon className="text-white" size={22} />
                         </motion.div>
                         <div>
-                          <p className="text-xs font-medium text-gray-500">{taskTypeLabels[task.type]}</p>
+                          <p className="text-xs font-medium text-gray-500">
+                            {taskTypeLabels[task.type]}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full shadow-lg">
@@ -284,17 +341,28 @@ export default function Tasks() {
                       </div>
                     </div>
 
-                    <h3 className="font-bold text-gray-900 mb-2 text-lg">{task.title}</h3>
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">{task.description}</p>
+                    <h3 className="font-bold text-gray-900 mb-2 text-lg">
+                      {task.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                      {task.description}
+                    </p>
 
                     <div className="flex items-center gap-2 mb-4 flex-wrap">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${task.priority === 'high'
-                        ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white'
-                        : task.priority === 'medium'
-                          ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'
-                          : 'bg-gray-200 text-gray-700'
-                        }`}>
-                        {task.priority === 'high' ? 'فوری' : task.priority === 'medium' ? 'متوسط' : 'عادی'}
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          task.priority === 'high'
+                            ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white'
+                            : task.priority === 'medium'
+                              ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'
+                              : 'bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        {task.priority === 'high'
+                          ? 'فوری'
+                          : task.priority === 'medium'
+                            ? 'متوسط'
+                            : 'عادی'}
                       </span>
                       <span className="text-xs text-gray-500 flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
                         <Calendar size={12} />
@@ -326,11 +394,11 @@ export default function Tasks() {
                     )}
                   </div>
                 </motion.div>
-              );
+              )
             })
           )}
         </motion.div>
       </div>
     </div>
-  );
+  )
 }
