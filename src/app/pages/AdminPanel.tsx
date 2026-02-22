@@ -1,23 +1,22 @@
-import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { useTasks, Task, TaskType } from '../contexts/TaskContext';
-import { useAnnouncements } from '../contexts/AnnouncementContext';
-import { useNavigate } from 'react-router';
 import {
-  Plus,
-  Users,
-  ListChecks,
-  Megaphone,
   BarChart3,
   CheckCircle,
   Clock,
-  XCircle,
-  TrendingUp,
+  ListChecks,
+  LogOut,
+  Megaphone,
+  Plus,
+  TrendingUp
 } from 'lucide-react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { useAnnouncements } from '../contexts/AnnouncementContext';
+import { useAuth } from '../contexts/AuthContext';
+import { Task, TaskType, useTasks } from '../contexts/TaskContext';
 
 export default function AdminPanel() {
-  const { user } = useAuth();
-  const { tasks, userTasks, createTask } = useTasks();
+  const { user, logout } = useAuth();
+  const { tasks, userTasks, isLoading, createTask } = useTasks();
   const { announcements, createAnnouncement } = useAnnouncements();
   const navigate = useNavigate();
 
@@ -105,9 +104,21 @@ export default function AdminPanel() {
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">پنل مدیریت</h1>
-          <p className="text-gray-600">مدیریت کمپین و نظارت بر فعالیت‌ها</p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">پنل مدیریت</h1>
+            <p className="text-gray-600">مدیریت کمپین و نظارت بر فعالیت‌ها</p>
+          </div>
+          <button
+            onClick={() => {
+              logout();
+              navigate('/login');
+            }}
+            className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          >
+            <LogOut size={20} />
+            <span>خروج</span>
+          </button>
         </div>
 
         {/* Tabs */}
@@ -115,33 +126,30 @@ export default function AdminPanel() {
           <div className="flex border-b border-gray-200">
             <button
               onClick={() => setActiveTab('overview')}
-              className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${
-                activeTab === 'overview'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+              className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${activeTab === 'overview'
+                ? 'text-blue-600 border-b-2 border-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               <BarChart3 size={20} />
               <span>نمای کلی</span>
             </button>
             <button
               onClick={() => setActiveTab('tasks')}
-              className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${
-                activeTab === 'tasks'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+              className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${activeTab === 'tasks'
+                ? 'text-blue-600 border-b-2 border-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               <ListChecks size={20} />
               <span>مدیریت وظایف</span>
             </button>
             <button
               onClick={() => setActiveTab('announcements')}
-              className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${
-                activeTab === 'announcements'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+              className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${activeTab === 'announcements'
+                ? 'text-blue-600 border-b-2 border-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               <Megaphone size={20} />
               <span>اطلاعیه‌ها</span>
@@ -186,13 +194,12 @@ export default function AdminPanel() {
                         <p className="font-medium text-gray-900">{task.title}</p>
                         <p className="text-sm text-gray-600">{task.points} امتیاز</p>
                       </div>
-                      <span className={`px-2 py-1 rounded text-xs ${
-                        task.priority === 'high' 
-                          ? 'bg-red-100 text-red-700'
-                          : task.priority === 'medium'
+                      <span className={`px-2 py-1 rounded text-xs ${task.priority === 'high'
+                        ? 'bg-red-100 text-red-700'
+                        : task.priority === 'medium'
                           ? 'bg-yellow-100 text-yellow-700'
                           : 'bg-gray-100 text-gray-700'
-                      }`}>
+                        }`}>
                         {task.priority === 'high' ? 'فوری' : task.priority === 'medium' ? 'متوسط' : 'عادی'}
                       </span>
                     </div>
@@ -344,35 +351,43 @@ export default function AdminPanel() {
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100">
               <div className="p-6 border-b border-gray-100">
-                <h3 className="text-xl font-bold text-gray-900">لیست وظایف ({tasks.length})</h3>
+                <h3 className="text-xl font-bold text-gray-900">
+                  لیست وظایف {isLoading ? '(در حال بارگذاری...)' : `(${tasks.length})`}
+                </h3>
               </div>
               <div className="divide-y divide-gray-100">
-                {tasks.map((task) => (
-                  <div
-                    key={task.id}
-                    className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-                    onClick={() => navigate(`/tasks/${task.id}`)}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 mb-1">{task.title}</h4>
-                        <p className="text-sm text-gray-600 mb-2 line-clamp-1">{task.description}</p>
-                        <div className="flex items-center gap-2 text-xs">
-                          <span className={`px-2 py-1 rounded ${
-                            task.priority === 'high' 
+                {isLoading ? (
+                  <div className="p-8 text-center">
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                    <p className="mt-2 text-gray-500">در حال بارگذاری وظایف...</p>
+                  </div>
+                ) : (
+                  tasks.map((task) => (
+                    <div
+                      key={task.id}
+                      className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                      onClick={() => navigate(`/tasks/${task.id}`)}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900 mb-1">{task.title}</h4>
+                          <p className="text-sm text-gray-600 mb-2 line-clamp-1">{task.description}</p>
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className={`px-2 py-1 rounded ${task.priority === 'high'
                               ? 'bg-red-100 text-red-700'
                               : task.priority === 'medium'
-                              ? 'bg-yellow-100 text-yellow-700'
-                              : 'bg-gray-100 text-gray-700'
-                          }`}>
-                            {task.priority === 'high' ? 'فوری' : task.priority === 'medium' ? 'متوسط' : 'عادی'}
-                          </span>
-                          <span className="text-gray-500">{task.points} امتیاز</span>
+                                ? 'bg-yellow-100 text-yellow-700'
+                                : 'bg-gray-100 text-gray-700'
+                              }`}>
+                              {task.priority === 'high' ? 'فوری' : task.priority === 'medium' ? 'متوسط' : 'عادی'}
+                            </span>
+                            <span className="text-gray-500">{task.points} امتیاز</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </>
