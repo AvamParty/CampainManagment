@@ -1,5 +1,4 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { apiRequest, clearTokens, setTokens } from '../api/client';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface User {
   id: string;
@@ -32,6 +31,46 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Mock users data
+const mockUsers: User[] = [
+  {
+    id: '1',
+    name: 'علی احمدی',
+    mobile: '09123456789',
+    email: 'ali@example.com',
+    role: 'admin',
+    profile: {
+      neighborhood: 'تهران، ونک',
+      education: 'کارشناسی ارشد',
+      educationField: 'علوم سیاسی',
+      experience: '5 سال فعالیت سیاسی',
+      skills: ['سخنرانی', 'مدیریت', 'روابط عمومی'],
+      interests: ['هماهنگی رویدادها', 'تحقیق و پژوهش'],
+      completionPercentage: 100,
+    },
+    points: 1250,
+    referralCode: 'ALI2024',
+  },
+  {
+    id: '2',
+    name: 'مریم کریمی',
+    mobile: '09121234567',
+    email: 'maryam@example.com',
+    role: 'user',
+    profile: {
+      neighborhood: 'تهران، سعادت‌آباد',
+      education: 'کارشناسی',
+      educationField: 'گرافیک',
+      experience: '3 سال طراحی گرافیک',
+      skills: ['طراحی گرافیک', 'ویرایش ویدیو'],
+      interests: ['تولید محتوا', 'طراحی'],
+      completionPercentage: 80,
+    },
+    points: 450,
+    referralCode: 'MARYAM2024',
+  },
+];
+
 function getInitialUser(): User | null {
   try {
     const stored = localStorage.getItem('campaign_user');
@@ -44,77 +83,65 @@ function getInitialUser(): User | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(getInitialUser);
 
-  useEffect(() => {
-    const syncUser = async () => {
-      try {
-        const me = await apiRequest<User>('/auth/me');
-        setUser(me);
-        localStorage.setItem('campaign_user', JSON.stringify(me));
-      } catch {
-        setUser(null);
-        localStorage.removeItem('campaign_user');
-        clearTokens();
-      }
-    };
-    void syncUser();
-  }, []);
-
   const login = async (mobile: string, password: string) => {
-    const response = await apiRequest<{
-      user: User;
-      accessToken: string;
-      refreshToken: string;
-    }>('/auth/login/password', {
-      method: 'POST',
-      body: JSON.stringify({ mobile, password }),
-    });
-    setTokens({
-      accessToken: response.accessToken,
-      refreshToken: response.refreshToken,
-    });
-    setUser(response.user);
-    localStorage.setItem('campaign_user', JSON.stringify(response.user));
+    // Mock login logic
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const foundUser = mockUsers.find(u => u.mobile === mobile);
+    if (foundUser) {
+      setUser(foundUser);
+      localStorage.setItem('campaign_user', JSON.stringify(foundUser));
+    } else {
+      throw new Error('کاربر یافت نشد');
+    }
   };
 
   const loginWithOTP = async (mobile: string, otp: string) => {
-    throw new Error('ورود با کد یکبار مصرف هنوز فعال نشده است');
+    // Mock OTP login
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const foundUser = mockUsers.find(u => u.mobile === mobile);
+    if (foundUser && otp === '1234') {
+      setUser(foundUser);
+      localStorage.setItem('campaign_user', JSON.stringify(foundUser));
+    } else {
+      throw new Error('کد تایید نادرست است');
+    }
   };
 
   const register = async (data: any) => {
-    const response = await apiRequest<{
-      user: User;
-      accessToken: string;
-      refreshToken: string;
-    }>('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-    setTokens({
-      accessToken: response.accessToken,
-      refreshToken: response.refreshToken,
-    });
-    setUser(response.user);
-    localStorage.setItem('campaign_user', JSON.stringify(response.user));
+    // Mock registration
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const newUser: User = {
+      id: Date.now().toString(),
+      name: data.name,
+      mobile: data.mobile,
+      email: data.email,
+      role: 'user',
+      profile: {
+        completionPercentage: 20,
+      },
+      points: 0,
+      referralCode: `USER${Date.now()}`,
+    };
+    setUser(newUser);
+    localStorage.setItem('campaign_user', JSON.stringify(newUser));
   };
 
   const updateProfile = async (data: any) => {
-    const updatedUser = await apiRequest<User>('/users/me/profile', {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    });
+    if (!user) return;
+    
+    const updatedProfile = { ...user.profile, ...data };
+    const fields = ['neighborhood', 'education', 'educationField', 'experience', 'skills', 'interests'];
+    const filledFields = fields.filter(field => updatedProfile[field]);
+    updatedProfile.completionPercentage = Math.round((filledFields.length / fields.length) * 100);
+    
+    const updatedUser = { ...user, profile: updatedProfile };
     setUser(updatedUser);
     localStorage.setItem('campaign_user', JSON.stringify(updatedUser));
   };
 
   const logout = () => {
-    const refreshToken = localStorage.getItem('campaign_refresh_token');
-    void apiRequest('/auth/logout', {
-      method: 'POST',
-      body: JSON.stringify({ refreshToken }),
-    }).catch(() => undefined);
     setUser(null);
     localStorage.removeItem('campaign_user');
-    clearTokens();
   };
 
   return (
