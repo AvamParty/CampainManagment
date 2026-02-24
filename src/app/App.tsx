@@ -1,10 +1,10 @@
-import { RouterProvider } from 'react-router';
-import { AuthProvider } from './contexts/AuthContext';
-import { TaskProvider } from './contexts/TaskContext';
-import { AnnouncementProvider } from './contexts/AnnouncementContext';
-import { router } from './routes';
+import { RouterProvider } from 'react-router'
+import { AnnouncementProvider } from './contexts/AnnouncementContext'
+import { AuthProvider } from './contexts/AuthContext'
+import { TaskProvider } from './contexts/TaskContext'
+import { router } from './routes'
 
-export default function App() {
+export default function App(): React.JSX.Element {
   return (
     <AuthProvider>
       <TaskProvider>
@@ -13,5 +13,5 @@ export default function App() {
         </AnnouncementProvider>
       </TaskProvider>
     </AuthProvider>
-  );
+  )
 }
