@@ -1,13 +1,6 @@
-import {
-  createContext,
-  type ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
-import { useAuth } from './AuthContext'
-import { apiRequest } from '../api/client'
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { apiRequest } from '../api/client';
+import { useAuth } from './AuthContext';
 
 export type TaskType =
   | 'opinion'
@@ -20,76 +13,57 @@ export type TaskType =
   | 'content'
   | 'distribution'
   | 'communication'
-  | 'resource'
+  | 'resource';
 
-export type TaskStatus =
-  | 'pending'
-  | 'in-progress'
-  | 'completed'
-  | 'approved'
-  | 'rejected'
-
-interface TaskDetails {
-  description?: string
-  requirements?: string[]
-  location?: string
-  deadline?: string
-  reward?: string
-}
+export type TaskStatus = 'pending' | 'in-progress' | 'completed' | 'approved' | 'rejected';
 
 export interface Task {
-  id: string
-  title: string
-  description: string
-  type: TaskType
-  status?: TaskStatus
-  points: number
-  deadline: string
-  priority: 'low' | 'medium' | 'high'
-  requiresCompleteProfile: boolean
-  createdBy?: string
-  createdByUserId?: string
-  section?: string
-  details?: TaskDetails
+  id: string;
+  title: string;
+  description: string;
+  type: TaskType;
+  status?: TaskStatus;
+  points: number;
+  deadline: string;
+  priority: 'low' | 'medium' | 'high';
+  requiresCompleteProfile: boolean;
+  createdBy: string;
+  section?: string;
+  details?: any;
 }
 
 export interface UserTask {
-  taskId: string
-  userId: string
-  acceptedAt: string
-  completedAt?: string
-  status: TaskStatus
-  submission?: unknown
+  taskId: string;
+  userId: string;
+  acceptedAt: string;
+  completedAt?: string;
+  status: TaskStatus;
+  submission?: any;
 }
 
 interface TaskContextType {
-  tasks: Task[]
-  userTasks: UserTask[]
-  isLoading: boolean
-  acceptTask: (taskId: string, userId: string) => void
-  submitTask: (taskId: string, userId: string, submission: unknown) => void
-  getUserTaskStatus: (taskId: string, userId: string) => UserTask | undefined
-  createTask: (task: Omit<Task, 'id'>) => void
+  tasks: Task[];
+  userTasks: UserTask[];
+  isLoading: boolean;
+  acceptTask: (taskId: string, userId: string) => void;
+  submitTask: (taskId: string, userId: string, submission: any) => void;
+  getUserTaskStatus: (taskId: string, userId: string) => UserTask | undefined;
+  createTask: (task: Omit<Task, 'id'>) => void;
 }
 
-const TaskContext = createContext<TaskContextType | undefined>(undefined)
-const mapStatus = (status: string): TaskStatus =>
-  status.replace('_', '-') as TaskStatus
+const TaskContext = createContext<TaskContextType | undefined>(undefined);
+const mapStatus = (status: string): TaskStatus => status.replace('_', '-') as TaskStatus;
 
-export function TaskProvider({
-  children,
-}: {
-  children: ReactNode
-}): React.JSX.Element {
-  const { isAuthenticated } = useAuth()
-  const [tasks, setTasks] = useState<Task[]>([])
-  const [userTasks, setUserTasks] = useState<UserTask[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+export function TaskProvider({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [userTasks, setUserTasks] = useState<UserTask[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const loadTasks = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const response = await apiRequest<{ data: Task[] }>('/tasks')
+      const response = await apiRequest<{ data: any[] }>('/tasks');
       setTasks(
         response.data.map(task => ({
           id: task.id,
@@ -101,20 +75,20 @@ export function TaskProvider({
           deadline: task.deadline,
           priority: task.priority,
           requiresCompleteProfile: task.requiresCompleteProfile,
-          createdBy: task.createdBy || task.createdByUserId,
+          createdBy: task.createdByUserId,
           section: task.section,
           details: task.details,
         })),
-      )
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const loadAssignments = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const assignments = await apiRequest<UserTask[]>('/tasks/my/assignments')
+      const assignments = await apiRequest<any[]>('/tasks/my/assignments');
       setUserTasks(
         assignments.map(assignment => ({
           taskId: assignment.taskId,
@@ -122,44 +96,43 @@ export function TaskProvider({
           acceptedAt: assignment.acceptedAt,
           completedAt: assignment.completedAt ?? undefined,
           status: mapStatus(assignment.status),
-          submission: (assignment.submission as { submissionData?: unknown })
-            ?.submissionData,
+          submission: assignment.submission?.submissionData,
         })),
-      )
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
-      void loadTasks()
-      void loadAssignments()
+      void loadTasks();
+      void loadAssignments();
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated]);
 
-  const acceptTask = (taskId: string, _userId: string) => {
+  const acceptTask = (taskId: string, userId: string) => {
     void apiRequest(`/tasks/${taskId}/accept`, {
       method: 'POST',
     }).then(() => {
-      void loadTasks()
-      void loadAssignments()
-    })
-  }
+      void loadTasks();
+      void loadAssignments();
+    });
+  };
 
-  const submitTask = (taskId: string, _userId: string, submission: unknown) => {
+  const submitTask = (taskId: string, userId: string, submission: any) => {
     void apiRequest(`/tasks/${taskId}/submit`, {
       method: 'POST',
       body: JSON.stringify({ submissionData: submission }),
     }).then(() => {
-      void loadTasks()
-      void loadAssignments()
-    })
-  }
+      void loadTasks();
+      void loadAssignments();
+    });
+  };
 
   const getUserTaskStatus = (taskId: string, userId: string) => {
-    return userTasks.find(ut => ut.taskId === taskId && ut.userId === userId)
-  }
+    return userTasks.find(ut => ut.taskId === taskId && ut.userId === userId);
+  };
 
   const createTask = (task: Omit<Task, 'id'>) => {
     void apiRequest('/admin/tasks', {
@@ -176,40 +149,31 @@ export function TaskProvider({
         details: task.details,
       }),
     }).then(() => {
-      void loadTasks()
-    })
-  }
+      void loadTasks();
+    });
+  };
 
-  const contextValue = useMemo(
-    () => ({
-      tasks,
-      userTasks,
-      isLoading,
-      acceptTask,
-      submitTask,
-      getUserTaskStatus,
-      createTask,
-    }),
-    [
-      tasks,
-      userTasks,
-      isLoading,
-      acceptTask,
-      submitTask,
-      getUserTaskStatus,
-      createTask,
-    ],
-  )
+  const contextValue = useMemo(() => ({
+    tasks,
+    userTasks,
+    isLoading,
+    acceptTask,
+    submitTask,
+    getUserTaskStatus,
+    createTask,
+  }), [tasks, userTasks, isLoading, acceptTask, submitTask, getUserTaskStatus, createTask]);
 
   return (
-    <TaskContext.Provider value={contextValue}>{children}</TaskContext.Provider>
-  )
+    <TaskContext.Provider value={contextValue}>
+      {children}
+    </TaskContext.Provider>
+  );
 }
 
-export function useTasks(): TaskContextType {
-  const context = useContext(TaskContext)
+export function useTasks() {
+  const context = useContext(TaskContext);
   if (context === undefined) {
-    throw new Error('useTasks must be used within a TaskProvider')
+    throw new Error('useTasks must be used within a TaskProvider');
   }
-  return context
+  return context;
 }

@@ -9,41 +9,40 @@ import {
   Target,
   TrendingUp,
   Trophy,
-  Zap,
-} from 'lucide-react'
-import { motion } from 'motion/react'
-import { useNavigate } from 'react-router'
+  Zap
+} from 'lucide-react';
+import { motion } from 'motion/react';
+import { useNavigate } from 'react-router';
 import {
   AnnouncementsListSkeleton,
   DashboardStatsSkeleton,
   MyTasksSkeleton,
-  TasksListSkeleton,
-} from '../components/dashboard-skeletons'
-import { useAnnouncements } from '../contexts/AnnouncementContext'
-import { useAuth } from '../contexts/AuthContext'
-import { useTasks } from '../contexts/TaskContext'
+  TasksListSkeleton
+} from '../components/dashboard-skeletons';
+import { useAnnouncements } from '../contexts/AnnouncementContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useTasks } from '../contexts/TaskContext';
 
-export default function Dashboard(): React.JSX.Element | null {
-  const { user } = useAuth()
-  const { tasks, userTasks, isLoading: tasksLoading } = useTasks()
-  const { announcements, isLoading: announcementsLoading } = useAnnouncements()
-  const navigate = useNavigate()
+export default function Dashboard() {
+  const { user } = useAuth();
+  const { tasks, userTasks, isLoading: tasksLoading } = useTasks();
+  const { announcements, isLoading: announcementsLoading } = useAnnouncements();
+  const navigate = useNavigate();
 
-  if (!user) return null
+  if (!user) return null;
 
-  const isLoading = tasksLoading || announcementsLoading
+  const isLoading = tasksLoading || announcementsLoading;
 
-  const myTasks = userTasks.filter(ut => ut.userId === user.id)
-  const completedTasks = myTasks.filter(
-    ut => ut.status === 'completed' || ut.status === 'approved',
-  )
-  const inProgressTasks = myTasks.filter(ut => ut.status === 'in-progress')
+  const myTasks = userTasks.filter(ut => ut.userId === user.id);
+  const completedTasks = myTasks.filter(ut => ut.status === 'completed' || ut.status === 'approved');
+  const inProgressTasks = myTasks.filter(ut => ut.status === 'in-progress');
+  const pendingTasks = myTasks.filter(ut => ut.status === 'pending');
 
-  const availableTasks = tasks
-    .filter(task => !myTasks.some(ut => ut.taskId === task.id))
-    .slice(0, 5)
+  const availableTasks = tasks.filter(
+    task => !myTasks.some(ut => ut.taskId === task.id)
+  ).slice(0, 5);
 
-  const recentAnnouncements = announcements.slice(0, 3)
+  const recentAnnouncements = announcements.slice(0, 3);
 
   const stats = [
     {
@@ -74,25 +73,25 @@ export default function Dashboard(): React.JSX.Element | null {
       gradient: 'from-purple-400 to-pink-500',
       iconBg: 'bg-gradient-to-br from-purple-400 to-pink-500',
     },
-  ]
+  ];
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  }
+        staggerChildren: 0.1
+      }
+    }
+  };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
-      opacity: 1,
-    },
-  }
+      opacity: 1
+    }
+  };
 
   return (
     <div className="min-h-screen p-4 md:p-6 lg:p-8 lg:pt-6">
@@ -114,9 +113,7 @@ export default function Dashboard(): React.JSX.Element | null {
               سلام، {user.name}!
             </h1>
           </div>
-          <p className="text-gray-600 text-lg">
-            آماده‌اید برای یک روز پرانرژی؟ 🚀
-          </p>
+          <p className="text-gray-600 text-lg">آماده‌اید برای یک روز پرانرژی؟ 🚀</p>
         </motion.div>
 
         {/* Profile Completion Alert */}
@@ -136,8 +133,7 @@ export default function Dashboard(): React.JSX.Element | null {
                   پروفایل خود را تکمیل کنید
                 </h3>
                 <p className="text-sm text-amber-800 mb-3">
-                  برخی وظایف نیاز به تکمیل پروفایل دارند. درصد تکمیل فعلی:{' '}
-                  {user.profile.completionPercentage}%
+                  برخی وظایف نیاز به تکمیل پروفایل دارند. درصد تکمیل فعلی: {user.profile.completionPercentage}%
                 </p>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -163,8 +159,8 @@ export default function Dashboard(): React.JSX.Element | null {
             animate="visible"
             className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
           >
-            {stats.map(stat => {
-              const Icon = stat.icon
+            {stats.map((stat, index) => {
+              const Icon = stat.icon;
               return (
                 <motion.div
                   key={stat.label}
@@ -173,9 +169,7 @@ export default function Dashboard(): React.JSX.Element | null {
                   className="relative bg-white/70 backdrop-blur-xl rounded-2xl p-5 md:p-6 shadow-lg border border-white/20 overflow-hidden group cursor-pointer"
                 >
                   {/* Gradient background on hover */}
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-10 transition-opacity`}
-                  />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-10 transition-opacity`} />
 
                   <div className="relative">
                     <div className="flex items-center justify-between mb-4">
@@ -190,12 +184,10 @@ export default function Dashboard(): React.JSX.Element | null {
                     <p className="text-3xl md:text-4xl font-bold bg-gradient-to-br from-gray-900 to-gray-600 bg-clip-text text-transparent mb-1">
                       {stat.value}
                     </p>
-                    <p className="text-sm text-gray-600 font-medium">
-                      {stat.label}
-                    </p>
+                    <p className="text-sm text-gray-600 font-medium">{stat.label}</p>
                   </div>
                 </motion.div>
-              )
+              );
             })}
           </motion.div>
         )}
@@ -244,34 +236,23 @@ export default function Dashboard(): React.JSX.Element | null {
                       onClick={() => navigate(`/tasks/${task.id}`)}
                     >
                       <div className="flex items-start justify-between gap-3 mb-2">
-                        <h3 className="font-bold text-gray-900">
-                          {task.title}
-                        </h3>
+                        <h3 className="font-bold text-gray-900">{task.title}</h3>
                         <div className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full flex-shrink-0">
                           <Zap size={14} fill="currentColor" />
-                          <span className="text-sm font-bold">
-                            {task.points}
-                          </span>
+                          <span className="text-sm font-bold">{task.points}</span>
                         </div>
                       </div>
                       <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                         {task.description}
                       </p>
                       <div className="flex items-center gap-2 text-xs">
-                        <span
-                          className={`px-2.5 py-1 rounded-full font-medium ${
-                            task.priority === 'high'
-                              ? 'bg-red-100 text-red-700'
-                              : task.priority === 'medium'
-                                ? 'bg-yellow-100 text-yellow-700'
-                                : 'bg-gray-100 text-gray-700'
-                          }`}
-                        >
-                          {task.priority === 'high'
-                            ? 'فوری'
-                            : task.priority === 'medium'
-                              ? 'متوسط'
-                              : 'عادی'}
+                        <span className={`px-2.5 py-1 rounded-full font-medium ${task.priority === 'high'
+                          ? 'bg-red-100 text-red-700'
+                          : task.priority === 'medium'
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : 'bg-gray-100 text-gray-700'
+                          }`}>
+                          {task.priority === 'high' ? 'فوری' : task.priority === 'medium' ? 'متوسط' : 'عادی'}
                         </span>
                         <span className="text-gray-500 flex items-center gap-1">
                           <Calendar size={12} />
@@ -333,13 +314,9 @@ export default function Dashboard(): React.JSX.Element | null {
                           <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
                             <CheckCircle className="text-white" size={20} />
                           </div>
-                          <span className="font-bold text-gray-900">
-                            تکمیل شده
-                          </span>
+                          <span className="font-bold text-gray-900">تکمیل شده</span>
                         </div>
-                        <span className="text-2xl font-bold text-green-600">
-                          {completedTasks.length}
-                        </span>
+                        <span className="text-2xl font-bold text-green-600">{completedTasks.length}</span>
                       </motion.div>
                       <motion.div
                         whileHover={{ scale: 1.02 }}
@@ -349,13 +326,9 @@ export default function Dashboard(): React.JSX.Element | null {
                           <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
                             <Clock className="text-white" size={20} />
                           </div>
-                          <span className="font-bold text-gray-900">
-                            در حال انجام
-                          </span>
+                          <span className="font-bold text-gray-900">در حال انجام</span>
                         </div>
-                        <span className="text-2xl font-bold text-blue-600">
-                          {inProgressTasks.length}
-                        </span>
+                        <span className="text-2xl font-bold text-blue-600">{inProgressTasks.length}</span>
                       </motion.div>
                       <motion.button
                         whileHover={{ scale: 1.02 }}
@@ -409,10 +382,7 @@ export default function Dashboard(): React.JSX.Element | null {
                         {announcement.content}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {announcement.author} •{' '}
-                        {new Date(announcement.createdAt).toLocaleDateString(
-                          'fa-IR',
-                        )}
+                        {announcement.author} • {new Date(announcement.createdAt).toLocaleDateString('fa-IR')}
                       </p>
                     </motion.div>
                   ))}
@@ -433,5 +403,5 @@ export default function Dashboard(): React.JSX.Element | null {
         </div>
       </div>
     </div>
-  )
+  );
 }

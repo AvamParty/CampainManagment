@@ -1,83 +1,62 @@
-import {
-  createContext,
-  type ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
-import { useAuth } from './AuthContext'
-import { apiRequest } from '../api/client'
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { apiRequest } from '../api/client';
+import { useAuth } from './AuthContext';
 
 export interface Announcement {
-  id: string
-  title: string
-  content: string
-  author: string
-  createdAt: string
-  imageUrl?: string
-  comments: Comment[]
-  reactions: Record<string, number>
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  createdAt: string;
+  imageUrl?: string;
+  comments: Comment[];
+  reactions: Record<string, number>;
 }
 
 export interface Comment {
-  id: string
-  userId: string
-  userName: string
-  content: string
-  createdAt: string
-  replies?: Comment[]
-  hidden?: boolean
+  id: string;
+  userId: string;
+  userName: string;
+  content: string;
+  createdAt: string;
+  replies?: Comment[];
+  hidden?: boolean;
 }
 
 interface AnnouncementContextType {
-  announcements: Announcement[]
-  isLoading: boolean
-  addComment: (
-    announcementId: string,
-    comment: Omit<Comment, 'id' | 'createdAt'>,
-  ) => void
-  addReaction: (announcementId: string, reaction: string) => void
-  createAnnouncement: (
-    announcement: Omit<
-      Announcement,
-      'id' | 'comments' | 'reactions' | 'createdAt'
-    >,
-  ) => void
+  announcements: Announcement[];
+  isLoading: boolean;
+  addComment: (announcementId: string, comment: Omit<Comment, 'id' | 'createdAt'>) => void;
+  addReaction: (announcementId: string, reaction: string) => void;
+  createAnnouncement: (announcement: Omit<Announcement, 'id' | 'comments' | 'reactions' | 'createdAt'>) => void;
 }
 
-const AnnouncementContext = createContext<AnnouncementContextType | undefined>(
-  undefined,
-)
+const AnnouncementContext = createContext<AnnouncementContextType | undefined>(undefined);
 
-export function AnnouncementProvider({
-  children,
-}: {
-  children: ReactNode
-}): React.JSX.Element {
-  const { isAuthenticated } = useAuth()
-  const [announcements, setAnnouncements] = useState<Announcement[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+export function AnnouncementProvider({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const loadAnnouncements = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const data = await apiRequest<Announcement[]>('/announcements')
-      setAnnouncements(data)
+      const data = await apiRequest<Announcement[]>('/announcements');
+      setAnnouncements(data);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
-      void loadAnnouncements()
+      void loadAnnouncements();
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated]);
 
   const addComment = (
     announcementId: string,
-    comment: Omit<Comment, 'id' | 'createdAt'>,
+    comment: Omit<Comment, 'id' | 'createdAt'>
   ) => {
     void apiRequest(`/announcements/${announcementId}/comments`, {
       method: 'POST',
@@ -85,9 +64,9 @@ export function AnnouncementProvider({
         content: comment.content,
       }),
     }).then(() => {
-      void loadAnnouncements()
-    })
-  }
+      void loadAnnouncements();
+    });
+  };
 
   const addReaction = (announcementId: string, reaction: string) => {
     void apiRequest(`/announcements/${announcementId}/reactions`, {
@@ -96,15 +75,12 @@ export function AnnouncementProvider({
         emoji: reaction,
       }),
     }).then(() => {
-      void loadAnnouncements()
-    })
-  }
+      void loadAnnouncements();
+    });
+  };
 
   const createAnnouncement = (
-    announcement: Omit<
-      Announcement,
-      'id' | 'comments' | 'reactions' | 'createdAt'
-    >,
+    announcement: Omit<Announcement, 'id' | 'comments' | 'reactions' | 'createdAt'>
   ) => {
     void apiRequest('/announcements', {
       method: 'POST',
@@ -114,34 +90,29 @@ export function AnnouncementProvider({
         imageUrl: announcement.imageUrl,
       }),
     }).then(() => {
-      void loadAnnouncements()
-    })
-  }
+      void loadAnnouncements();
+    });
+  };
 
-  const contextValue = useMemo(
-    () => ({
-      announcements,
-      isLoading,
-      addComment,
-      addReaction,
-      createAnnouncement,
-    }),
-    [announcements, isLoading, addComment, addReaction, createAnnouncement],
-  )
+  const contextValue = useMemo(() => ({
+    announcements,
+    isLoading,
+    addComment,
+    addReaction,
+    createAnnouncement,
+  }), [announcements, isLoading, addComment, addReaction, createAnnouncement]);
 
   return (
     <AnnouncementContext.Provider value={contextValue}>
       {children}
     </AnnouncementContext.Provider>
-  )
+  );
 }
 
-export function useAnnouncements(): AnnouncementContextType {
-  const context = useContext(AnnouncementContext)
+export function useAnnouncements() {
+  const context = useContext(AnnouncementContext);
   if (context === undefined) {
-    throw new Error(
-      'useAnnouncements must be used within an AnnouncementProvider',
-    )
+    throw new Error('useAnnouncements must be used within an AnnouncementProvider');
   }
-  return context
+  return context;
 }

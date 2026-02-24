@@ -1,88 +1,86 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { AlertCircle, Lock, Phone, Shield, Sparkles, Zap } from 'lucide-react'
-import { AnimatePresence, motion } from 'motion/react'
-import { Link, useNavigate } from 'react-router'
-import { useAuth } from '../contexts/AuthContext'
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router';
+import { useAuth } from '../contexts/AuthContext';
+import { Phone, Lock, AlertCircle, Sparkles, Zap, Shield } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
-export default function Login(): React.JSX.Element {
-  const [loginMethod, setLoginMethod] = useState<'password' | 'otp'>('password')
-  const toggleRef = useRef<HTMLDivElement>(null)
-  const passwordButtonRef = useRef<HTMLButtonElement>(null)
-  const otpButtonRef = useRef<HTMLButtonElement>(null)
-  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 })
+export default function Login() {
+  const [loginMethod, setLoginMethod] = useState<'password' | 'otp'>('password');
+  const toggleRef = useRef<HTMLDivElement>(null);
+  const passwordButtonRef = useRef<HTMLButtonElement>(null);
+  const otpButtonRef = useRef<HTMLButtonElement>(null);
+  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 });
 
   useEffect(() => {
     const update = () => {
       const selectedButton =
-        loginMethod === 'password'
-          ? passwordButtonRef.current
-          : otpButtonRef.current
-      if (!selectedButton) return
+        loginMethod === 'password' ? passwordButtonRef.current : otpButtonRef.current;
+      if (!selectedButton) return;
       setPillStyle({
         left: selectedButton.offsetLeft,
         width: selectedButton.offsetWidth,
-      })
-    }
+      });
+    };
 
-    update()
-    const ro = new ResizeObserver(update)
+    update();
+    const ro = new ResizeObserver(update);
     if (toggleRef.current) {
-      ro.observe(toggleRef.current)
+      ro.observe(toggleRef.current);
     }
-    return () => ro.disconnect()
-  }, [loginMethod])
-  const [mobile, setMobile] = useState('')
-  const [password, setPassword] = useState('')
-  const [otp, setOtp] = useState('')
-  const [otpSent, setOtpSent] = useState(false)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  const { login, loginWithOTP } = useAuth()
-  const navigate = useNavigate()
+    return () => ro.disconnect();
+  }, [loginMethod]);
+  const [mobile, setMobile] = useState('');
+  const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  const { login, loginWithOTP } = useAuth();
+  const navigate = useNavigate();
 
   const handlePasswordLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    
     try {
-      await login(mobile, password)
-      navigate('/tasks')
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'خطا در ورود')
+      await login(mobile, password);
+      navigate('/tasks');
+    } catch (err: any) {
+      setError(err.message || 'خطا در ورود');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSendOTP = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    
     // Mock OTP sending
     setTimeout(() => {
-      setOtpSent(true)
-      setLoading(false)
-      setError('کد تایید: 1234')
-    }, 500)
-  }
+      setOtpSent(true);
+      setLoading(false);
+      setError('کد تایید: 1234');
+    }, 500);
+  };
 
   const handleOTPLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    
     try {
-      await loginWithOTP(mobile, otp)
-      navigate('/tasks')
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'کد تایید نادرست است')
+      await loginWithOTP(mobile, otp);
+      navigate('/tasks');
+    } catch (err: any) {
+      setError(err.message || 'کد تایید نادرست است');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea] via-[#764ba2] to-[#f093fb] p-4 relative overflow-hidden">
@@ -106,7 +104,7 @@ export default function Login(): React.JSX.Element {
         />
       </div>
 
-      <motion.div
+      <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -129,10 +127,7 @@ export default function Login(): React.JSX.Element {
           </div>
 
           {/* Login Method Toggle */}
-          <div
-            ref={toggleRef}
-            className="relative flex gap-2 mb-6 bg-gray-100/80 backdrop-blur-xl p-1 rounded-2xl"
-          >
+          <div ref={toggleRef} className="relative flex gap-2 mb-6 bg-gray-100/80 backdrop-blur-xl p-1 rounded-2xl">
             {/* Sliding pill – animates horizontally (left to right / right to left) */}
             {pillStyle.width > 0 && (
               <motion.div
@@ -152,12 +147,14 @@ export default function Login(): React.JSX.Element {
             <button
               ref={passwordButtonRef}
               onClick={() => {
-                setLoginMethod('password')
-                setOtpSent(false)
-                setError('')
+                setLoginMethod('password');
+                setOtpSent(false);
+                setError('');
               }}
               className={`relative flex-1 py-3 px-4 rounded-xl transition-all font-medium z-10 ${
-                loginMethod === 'password' ? 'text-white' : 'text-gray-600'
+                loginMethod === 'password'
+                  ? 'text-white'
+                  : 'text-gray-600'
               }`}
             >
               <span className="flex items-center justify-center gap-2">
@@ -168,12 +165,14 @@ export default function Login(): React.JSX.Element {
             <button
               ref={otpButtonRef}
               onClick={() => {
-                setLoginMethod('otp')
-                setOtpSent(false)
-                setError('')
+                setLoginMethod('otp');
+                setOtpSent(false);
+                setError('');
               }}
               className={`relative flex-1 py-3 px-4 rounded-xl transition-all font-medium z-10 ${
-                loginMethod === 'otp' ? 'text-white' : 'text-gray-600'
+                loginMethod === 'otp'
+                  ? 'text-white'
+                  : 'text-gray-600'
               }`}
             >
               <span className="flex items-center justify-center gap-2">
@@ -197,16 +196,10 @@ export default function Login(): React.JSX.Element {
                 }`}
               >
                 <AlertCircle
-                  className={
-                    error.includes('کد تایید: ')
-                      ? 'text-green-600'
-                      : 'text-red-600'
-                  }
+                  className={error.includes('کد تایید: ') ? 'text-green-600' : 'text-red-600'}
                   size={20}
                 />
-                <p
-                  className={`text-sm ${error.includes('کد تایید: ') ? 'text-green-800' : 'text-red-800'}`}
-                >
+                <p className={`text-sm ${error.includes('کد تایید: ') ? 'text-green-800' : 'text-red-800'}`}>
                   {error}
                 </p>
               </motion.div>
@@ -232,15 +225,12 @@ export default function Login(): React.JSX.Element {
                     <input
                       type="tel"
                       value={mobile}
-                      onChange={e => setMobile(e.target.value)}
+                      onChange={(e) => setMobile(e.target.value)}
                       placeholder="09123456789"
                       className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:border-transparent transition-all"
                       required
                     />
-                    <Phone
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
-                      size={20}
-                    />
+                    <Phone className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                   </div>
                 </div>
 
@@ -252,15 +242,12 @@ export default function Login(): React.JSX.Element {
                     <input
                       type="password"
                       value={password}
-                      onChange={e => setPassword(e.target.value)}
+                      onChange={(e) => setPassword(e.target.value)}
                       placeholder="رمز عبور خود را وارد کنید"
                       className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:border-transparent transition-all"
                       required
                     />
-                    <Lock
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
-                      size={20}
-                    />
+                    <Lock className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                   </div>
                 </div>
 
@@ -294,15 +281,12 @@ export default function Login(): React.JSX.Element {
                         <input
                           type="tel"
                           value={mobile}
-                          onChange={e => setMobile(e.target.value)}
+                          onChange={(e) => setMobile(e.target.value)}
                           placeholder="09123456789"
                           className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:border-transparent transition-all"
                           required
                         />
-                        <Phone
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
-                          size={20}
-                        />
+                        <Phone className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                       </div>
                     </div>
 
@@ -326,16 +310,13 @@ export default function Login(): React.JSX.Element {
                         <input
                           type="text"
                           value={otp}
-                          onChange={e => setOtp(e.target.value)}
+                          onChange={(e) => setOtp(e.target.value)}
                           placeholder="کد 4 رقمی را وارد کنید"
                           maxLength={4}
                           className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:border-transparent transition-all text-center text-2xl tracking-widest"
                           required
                         />
-                        <Shield
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
-                          size={20}
-                        />
+                        <Shield className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                       </div>
                     </div>
 
@@ -364,28 +345,11 @@ export default function Login(): React.JSX.Element {
 
           {/* Demo Credentials */}
           <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
-            <p className="text-xs font-medium text-blue-900 mb-2">
-              اطلاعات ورود دمو:
-            </p>
+            <p className="text-xs font-medium text-blue-900 mb-2">اطلاعات ورود دمو:</p>
             <div className="text-xs text-blue-800 space-y-1">
-              <p>
-                موبایل:{' '}
-                <span className="font-mono bg-white px-2 py-0.5 rounded">
-                  09123456789
-                </span>
-              </p>
-              <p>
-                رمز:{' '}
-                <span className="font-mono bg-white px-2 py-0.5 rounded">
-                  password123
-                </span>
-              </p>
-              <p>
-                کد OTP:{' '}
-                <span className="font-mono bg-white px-2 py-0.5 rounded">
-                  1234
-                </span>
-              </p>
+              <p>موبایل: <span className="font-mono bg-white px-2 py-0.5 rounded">09123456789</span></p>
+              <p>رمز: <span className="font-mono bg-white px-2 py-0.5 rounded">password123</span></p>
+              <p>کد OTP: <span className="font-mono bg-white px-2 py-0.5 rounded">1234</span></p>
             </div>
           </div>
 
@@ -404,5 +368,5 @@ export default function Login(): React.JSX.Element {
         </div>
       </motion.div>
     </div>
-  )
+  );
 }

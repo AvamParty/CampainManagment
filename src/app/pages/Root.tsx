@@ -1,56 +1,42 @@
-import {
-  Home,
-  ListTodo,
-  LogIn,
-  LogOut,
-  Megaphone,
-  Settings,
-  Sparkles,
-  User,
-} from 'lucide-react'
-import { motion } from 'motion/react'
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router'
-import { useAuth } from '../contexts/AuthContext'
+import { Home, ListTodo, LogIn, LogOut, Megaphone, Settings, Sparkles, User } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router';
+import { useAuth } from '../contexts/AuthContext';
 
-export default function Root(): React.JSX.Element {
-  const { user, isAuthenticated, logout } = useAuth()
-  const navigate = useNavigate()
-  const location = useLocation()
+export default function Root() {
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const baseNavigation = [
     { name: 'داشبورد', path: '/dashboard', icon: Home },
     { name: 'وظایف', path: '/tasks', icon: ListTodo },
     { name: 'اطلاعیه‌ها', path: '/announcements', icon: Megaphone },
     { name: 'پروفایل', path: '/profile', icon: User },
-  ]
-  const adminNavItem = { name: 'مدیریت', path: '/admin', icon: Settings }
+  ];
+  const adminNavItem = { name: 'مدیریت', path: '/admin', icon: Settings };
   const navigation =
     user && (user.role === 'admin' || user.role === 'manager')
       ? [...baseNavigation, adminNavItem]
-      : baseNavigation
-  const activeMobileIndex = navigation.findIndex(
-    item => item.path === location.pathname,
-  )
+      : baseNavigation;
+  const activeMobileIndex = navigation.findIndex((item) => item.path === location.pathname);
 
   // Public routes that don't need auth
-  const publicRoutes = ['/login', '/register']
-  const isPublicRoute = publicRoutes.includes(location.pathname)
+  const publicRoutes = ['/login', '/register'];
+  const isPublicRoute = publicRoutes.includes(location.pathname);
 
   // Logged-in users must never see login/register — redirect to tasks
   if (isAuthenticated && isPublicRoute) {
-    return <Navigate to="/tasks" replace />
+    return <Navigate to="/tasks" replace />;
   }
 
   // Redirect to login if not authenticated and not on public route
   if (!isAuthenticated && !isPublicRoute) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/login" replace />;
   }
 
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-[#f8f9fe] via-[#f0f2ff] to-[#e8ebff]"
-      dir="rtl"
-    >
+    <div className="min-h-screen bg-gradient-to-br from-[#f8f9fe] via-[#f0f2ff] to-[#e8ebff]" dir="rtl">
       {isAuthenticated && (
         <>
           {/* Floating Mobile Bottom Navigation */}
@@ -59,9 +45,7 @@ export default function Root(): React.JSX.Element {
             className="lg:hidden fixed bottom-4 left-4 right-4 z-50"
           >
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 px-2 py-3">
-              <div
-                className={`relative grid gap-1 ${navigation.length === 5 ? 'grid-cols-5' : 'grid-cols-4'}`}
-              >
+              <div className={`relative grid gap-1 ${navigation.length === 5 ? 'grid-cols-5' : 'grid-cols-4'}`}>
                 {activeMobileIndex >= 0 && (
                   <motion.div
                     initial={false}
@@ -71,24 +55,23 @@ export default function Root(): React.JSX.Element {
                     transition={{ type: 'spring', bounce: 0.2, duration: 0.45 }}
                   />
                 )}
-                {navigation.map(item => {
-                  const Icon = item.icon
-                  const isActive = location.pathname === item.path
+                {navigation.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = location.pathname === item.path;
                   return (
                     <motion.button
                       key={item.path}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => navigate(item.path)}
-                      className={`relative z-10 flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all ${
-                        isAuthenticated && isActive
-                          ? 'text-white'
-                          : 'text-gray-600'
-                      }`}
+                      className={`relative z-10 flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all ${isAuthenticated && isActive
+                        ? 'text-white'
+                        : 'text-gray-600'
+                        }`}
                     >
                       <Icon size={20} />
                       <span className="text-[10px]">{item.name}</span>
                     </motion.button>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -147,8 +130,8 @@ export default function Root(): React.JSX.Element {
             {/* Navigation */}
             <nav className="space-y-2 mb-6">
               {navigation.map((item, index) => {
-                const Icon = item.icon
-                const isActive = location.pathname === item.path
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
                 return (
                   <motion.button
                     key={item.path}
@@ -158,29 +141,22 @@ export default function Root(): React.JSX.Element {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => navigate(item.path)}
-                    className={`relative w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all ${
-                      isActive
-                        ? 'text-white shadow-lg'
-                        : 'text-gray-700 hover:bg-white/50'
-                    }`}
+                    className={`relative w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all ${isActive
+                      ? 'text-white shadow-lg'
+                      : 'text-gray-700 hover:bg-white/50'
+                      }`}
                   >
                     {isActive && (
                       <motion.div
                         layoutId="activeNavItem"
                         className="absolute inset-0 bg-gradient-to-r from-[#667eea] to-[#764ba2] rounded-xl"
-                        transition={{
-                          type: 'spring',
-                          bounce: 0.2,
-                          duration: 0.6,
-                        }}
+                        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                       />
                     )}
                     <Icon size={22} className="relative z-10" />
-                    <span className="relative z-10 font-medium">
-                      {item.name}
-                    </span>
+                    <span className="relative z-10 font-medium">{item.name}</span>
                   </motion.button>
-                )
+                );
               })}
             </nav>
 
@@ -193,8 +169,8 @@ export default function Root(): React.JSX.Element {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
-                  logout()
-                  navigate('/login')
+                  logout();
+                  navigate('/login');
                 }}
                 className="relative w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all text-red-600 hover:bg-red-50"
               >
@@ -202,6 +178,7 @@ export default function Root(): React.JSX.Element {
                 <span className="font-medium">خروج</span>
               </motion.button>
             )}
+
           </motion.aside>
         </>
       )}
@@ -244,5 +221,5 @@ export default function Root(): React.JSX.Element {
         <Outlet />
       </main>
     </div>
-  )
+  );
 }
