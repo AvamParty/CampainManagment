@@ -31,4 +31,3 @@ coverage/
 .cache/
 .parcel-cache/
 .vite/
-.eslintcache
