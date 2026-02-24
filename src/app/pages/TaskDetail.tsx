@@ -19,12 +19,10 @@ export default function TaskDetail(): React.JSX.Element | null {
   const { tasks, acceptTask, submitTask, getUserTaskStatus } = useTasks()
   const navigate = useNavigate()
 
-  const [submission, setSubmission] = useState<
-    Record<string, string | number | boolean>
-  >({})
+  const [submission, setSubmission] = useState<Record<string, unknown>>({})
   const [submitting, setSubmitting] = useState(false)
 
-  if (user === null || taskId === undefined || taskId === null) return null
+  if (!user || !taskId) return null
 
   const task = tasks.find(t => t.id === taskId)
   if (!task) {
@@ -74,7 +72,7 @@ export default function TaskDetail(): React.JSX.Element | null {
                 نظر شما
               </label>
               <textarea
-                value={(submission.opinion as string) ?? ''}
+                value={(submission.opinion as string) || ''}
                 onChange={e =>
                   setSubmission({ ...submission, opinion: e.target.value })
                 }
@@ -95,7 +93,7 @@ export default function TaskDetail(): React.JSX.Element | null {
                 خلاصه تحقیق
               </label>
               <textarea
-                value={(submission.summary as string) ?? ''}
+                value={submission.summary || ''}
                 onChange={e =>
                   setSubmission({ ...submission, summary: e.target.value })
                 }
@@ -129,7 +127,7 @@ export default function TaskDetail(): React.JSX.Element | null {
               </label>
               <input
                 type="text"
-                value={(submission.mosqueName as string) ?? ''}
+                value={submission.mosqueName || ''}
                 onChange={e =>
                   setSubmission({ ...submission, mosqueName: e.target.value })
                 }
@@ -143,7 +141,7 @@ export default function TaskDetail(): React.JSX.Element | null {
                 آدرس
               </label>
               <textarea
-                value={(submission.address as string) ?? ''}
+                value={submission.address || ''}
                 onChange={e =>
                   setSubmission({ ...submission, address: e.target.value })
                 }
@@ -159,7 +157,7 @@ export default function TaskDetail(): React.JSX.Element | null {
               </label>
               <input
                 type="tel"
-                value={(submission.phone as string) ?? ''}
+                value={submission.phone || ''}
                 onChange={e =>
                   setSubmission({ ...submission, phone: e.target.value })
                 }
@@ -180,7 +178,7 @@ export default function TaskDetail(): React.JSX.Element | null {
               </label>
               <input
                 type="text"
-                value={(submission.placeName as string) ?? ''}
+                value={submission.placeName || ''}
                 onChange={e =>
                   setSubmission({ ...submission, placeName: e.target.value })
                 }
@@ -195,7 +193,7 @@ export default function TaskDetail(): React.JSX.Element | null {
               </label>
               <input
                 type="text"
-                value={(submission.contactPerson as string) ?? ''}
+                value={submission.contactPerson || ''}
                 onChange={e =>
                   setSubmission({
                     ...submission,
@@ -213,7 +211,7 @@ export default function TaskDetail(): React.JSX.Element | null {
               </label>
               <input
                 type="tel"
-                value={(submission.contactPhone as string) ?? ''}
+                value={submission.contactPhone || ''}
                 onChange={e =>
                   setSubmission({ ...submission, contactPhone: e.target.value })
                 }
@@ -227,7 +225,7 @@ export default function TaskDetail(): React.JSX.Element | null {
                 وضعیت هماهنگی
               </label>
               <textarea
-                value={(submission.status as string) ?? ''}
+                value={submission.status || ''}
                 onChange={e =>
                   setSubmission({ ...submission, status: e.target.value })
                 }
@@ -268,12 +266,12 @@ export default function TaskDetail(): React.JSX.Element | null {
                 })
               }}
               className={`w-full py-3 rounded-lg font-medium transition-colors ${
-                Boolean(submission.locationVerified)
+                submission.locationVerified
                   ? 'bg-green-100 text-green-700 border-2 border-green-300'
                   : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}
             >
-              {Boolean(submission.locationVerified) ? (
+              {submission.locationVerified ? (
                 <span className="flex items-center justify-center gap-2">
                   <CheckCircle size={20} />
                   موقعیت مکانی تایید شد
@@ -294,7 +292,7 @@ export default function TaskDetail(): React.JSX.Element | null {
               </label>
               <input
                 type="text"
-                value={(submission.referralName as string) ?? ''}
+                value={submission.referralName || ''}
                 onChange={e =>
                   setSubmission({ ...submission, referralName: e.target.value })
                 }
@@ -309,7 +307,7 @@ export default function TaskDetail(): React.JSX.Element | null {
               </label>
               <input
                 type="tel"
-                value={(submission.referralPhone as string) ?? ''}
+                value={submission.referralPhone || ''}
                 onChange={e =>
                   setSubmission({
                     ...submission,
@@ -326,7 +324,7 @@ export default function TaskDetail(): React.JSX.Element | null {
                 توضیحات (اختیاری)
               </label>
               <textarea
-                value={(submission.referralNotes as string) ?? ''}
+                value={submission.referralNotes || ''}
                 onChange={e =>
                   setSubmission({
                     ...submission,
@@ -350,7 +348,7 @@ export default function TaskDetail(): React.JSX.Element | null {
                 توضیحات
               </label>
               <textarea
-                value={(submission.description as string) ?? ''}
+                value={submission.description || ''}
                 onChange={e =>
                   setSubmission({ ...submission, description: e.target.value })
                 }
@@ -387,7 +385,7 @@ export default function TaskDetail(): React.JSX.Element | null {
               </label>
               <input
                 type="url"
-                value={(submission.shareLink as string) ?? ''}
+                value={submission.shareLink || ''}
                 onChange={e =>
                   setSubmission({ ...submission, shareLink: e.target.value })
                 }
@@ -401,7 +399,7 @@ export default function TaskDetail(): React.JSX.Element | null {
                 پلتفرم
               </label>
               <select
-                value={(submission.platform as string) ?? ''}
+                value={submission.platform || ''}
                 onChange={e =>
                   setSubmission({ ...submission, platform: e.target.value })
                 }
@@ -437,7 +435,7 @@ export default function TaskDetail(): React.JSX.Element | null {
               </label>
               <input
                 type="number"
-                value={(submission.callCount as string) ?? ''}
+                value={submission.callCount || ''}
                 onChange={e =>
                   setSubmission({ ...submission, callCount: e.target.value })
                 }
@@ -452,7 +450,7 @@ export default function TaskDetail(): React.JSX.Element | null {
                 خلاصه مکالمات
               </label>
               <textarea
-                value={(submission.callSummary as string) ?? ''}
+                value={submission.callSummary || ''}
                 onChange={e =>
                   setSubmission({ ...submission, callSummary: e.target.value })
                 }
@@ -474,7 +472,7 @@ export default function TaskDetail(): React.JSX.Element | null {
               </label>
               <input
                 type="text"
-                value={(submission.resourceType as string) ?? ''}
+                value={submission.resourceType || ''}
                 onChange={e =>
                   setSubmission({ ...submission, resourceType: e.target.value })
                 }
@@ -489,7 +487,7 @@ export default function TaskDetail(): React.JSX.Element | null {
               </label>
               <input
                 type="text"
-                value={(submission.availability as string) ?? ''}
+                value={submission.availability || ''}
                 onChange={e =>
                   setSubmission({ ...submission, availability: e.target.value })
                 }
@@ -503,7 +501,7 @@ export default function TaskDetail(): React.JSX.Element | null {
                 توضیحات تکمیلی
               </label>
               <textarea
-                value={(submission.resourceNotes as string) ?? ''}
+                value={submission.resourceNotes || ''}
                 onChange={e =>
                   setSubmission({
                     ...submission,
@@ -588,9 +586,7 @@ export default function TaskDetail(): React.JSX.Element | null {
             </div>
             <div>
               <p className="text-xs text-gray-500 mb-1">ایجاد شده توسط</p>
-              <p className="text-sm font-medium">
-                {(task.createdBy as string) ?? ''}
-              </p>
+              <p className="text-sm font-medium">{task.createdBy}</p>
             </div>
           </div>
         </div>
@@ -674,8 +670,7 @@ export default function TaskDetail(): React.JSX.Element | null {
                   {userTask.status === 'rejected' && 'وظیفه رد شد'}
                 </p>
                 <p className="text-sm">
-                  {userTask.completedAt !== null &&
-                    userTask.completedAt !== undefined &&
+                  {userTask.completedAt &&
                     `تاریخ ارسال: ${new Date(userTask.completedAt).toLocaleDateString('fa-IR')}`}
                 </p>
               </div>

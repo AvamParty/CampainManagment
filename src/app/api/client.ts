@@ -1,9 +1,9 @@
-import { isNotNull, isValidString } from '../utils/typeGuards'
-
-const API_BASE_URL: string =
-  typeof import.meta.env.VITE_API_BASE_URL === 'string'
-    ? import.meta.env.VITE_API_BASE_URL
-    : 'http://localhost:3000/v1'
+const API_BASE_URL =
+  (
+    import.meta as ImportMeta & {
+      env: Record<string, string | undefined>
+    }
+  ).env.VITE_API_BASE_URL ?? 'http://localhost:3000/v1'
 
 const ACCESS_TOKEN_KEY = 'campaign_access_token'
 const REFRESH_TOKEN_KEY = 'campaign_refresh_token'
@@ -35,7 +35,7 @@ type RequestInitWithRetry = RequestInit & {
 
 async function refreshAccessToken() {
   const refreshToken = getRefreshToken()
-  if (!isValidString(refreshToken)) return false
+  if (!refreshToken) return false
   try {
     const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
@@ -43,10 +43,7 @@ async function refreshAccessToken() {
       body: JSON.stringify({ refreshToken }),
     })
     if (!response.ok) return false
-    const body = (await response.json()) as {
-      accessToken: string
-      refreshToken: string
-    }
+    const body = await response.json()
     setTokens({
       accessToken: body.accessToken,
       refreshToken: body.refreshToken,
@@ -65,7 +62,7 @@ export async function apiRequest<T>(
   headers.set('Content-Type', 'application/json')
 
   const token = getAccessToken()
-  if (isValidString(token)) {
+  if (token) {
     headers.set('Authorization', `Bearer ${token}`)
   }
 
@@ -74,7 +71,7 @@ export async function apiRequest<T>(
     headers,
   })
 
-  if (response.status === 401 && !isNotNull(options._retry)) {
+  if (response.status === 401 && !options._retry) {
     const refreshed = await refreshAccessToken()
     if (refreshed) {
       return apiRequest<T>(path, { ...options, _retry: true })
@@ -83,9 +80,7 @@ export async function apiRequest<T>(
   }
 
   if (!response.ok) {
-    const errorBody = (await response.json().catch(() => null)) as {
-      message?: string | string[]
-    } | null
+    const errorBody = await response.json().catch(() => null)
     const message = errorBody?.message ?? 'Unexpected API error'
     throw new Error(Array.isArray(message) ? message.join(', ') : message)
   }

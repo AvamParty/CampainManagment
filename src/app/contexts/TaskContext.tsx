@@ -8,7 +8,6 @@ import {
 } from 'react'
 import { useAuth } from './AuthContext'
 import { apiRequest } from '../api/client'
-import { getStringOrDefault } from '../utils/typeGuards'
 
 export type TaskType =
   | 'opinion'
@@ -102,7 +101,7 @@ export function TaskProvider({
           deadline: task.deadline,
           priority: task.priority,
           requiresCompleteProfile: task.requiresCompleteProfile,
-          createdBy: getStringOrDefault(task.createdBy ?? task.createdByUserId),
+          createdBy: task.createdBy || task.createdByUserId,
           section: task.section,
           details: task.details,
         })),

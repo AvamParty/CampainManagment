@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { MessageCircle, Send, Smile } from 'lucide-react'
 import { useAnnouncements } from '../contexts/AnnouncementContext'
 import { useAuth } from '../contexts/AuthContext'
-import { isValidString } from '../utils/typeGuards'
 
 const reactionEmojis = ['👍', '❤️', '🔥', '👏', '😊', '💪']
 
@@ -58,7 +57,7 @@ export default function Announcements(): React.JSX.Element | null {
                 <p className="text-gray-700 leading-relaxed mb-4">
                   {announcement.content}
                 </p>
-                {isValidString(announcement.imageUrl) && (
+                {announcement.imageUrl && (
                   <img
                     src={announcement.imageUrl}
                     alt={announcement.title}

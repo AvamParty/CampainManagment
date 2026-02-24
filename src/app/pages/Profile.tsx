@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   Briefcase,
   Edit,
@@ -11,40 +11,19 @@ import {
 } from 'lucide-react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '../contexts/AuthContext'
-import { getStringOrDefault, isValidString } from '../utils/typeGuards'
 
 export default function Profile(): React.JSX.Element | null {
   const { user, updateProfile, logout } = useAuth()
   const navigate = useNavigate()
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
-    neighborhood: '',
-    education: '',
-    educationField: '',
-    experience: '',
-    skills: '',
-    interests: '',
+    neighborhood: user?.profile.neighborhood || '',
+    education: user?.profile.education || '',
+    educationField: user?.profile.educationField || '',
+    experience: user?.profile.experience || '',
+    skills: user?.profile.skills?.join(', ') || '',
+    interests: user?.profile.interests?.join(', ') || '',
   })
-
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        neighborhood: getStringOrDefault(user?.profile.neighborhood),
-        education: getStringOrDefault(user?.profile.education),
-        educationField: getStringOrDefault(user?.profile.educationField),
-        experience: getStringOrDefault(user?.profile.experience),
-        skills:
-          user?.profile.skills !== undefined && user.profile.skills.length > 0
-            ? user.profile.skills.join(', ')
-            : '',
-        interests:
-          user?.profile.interests !== undefined &&
-          user.profile.interests.length > 0
-            ? user.profile.interests.join(', ')
-            : '',
-      })
-    }
-  }, [user])
 
   if (!user) return null
 
@@ -114,9 +93,7 @@ export default function Profile(): React.JSX.Element | null {
                 {user.name}
               </h2>
               <p className="text-gray-600 mb-2">{user.mobile}</p>
-              {isValidString(user.email) && (
-                <p className="text-gray-600 mb-2">{user.email}</p>
-              )}
+              {user.email && <p className="text-gray-600 mb-2">{user.email}</p>}
               <div className="flex items-center gap-4 justify-center md:justify-start">
                 <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
                   {user.role === 'admin'
@@ -188,7 +165,7 @@ export default function Profile(): React.JSX.Element | null {
                   />
                 ) : (
                   <p className="text-gray-900 px-4 py-3 bg-gray-50 rounded-lg">
-                    {getStringOrDefault(user.profile.neighborhood, 'وارد نشده')}
+                    {user.profile.neighborhood || 'وارد نشده'}
                   </p>
                 )}
               </div>
@@ -217,7 +194,7 @@ export default function Profile(): React.JSX.Element | null {
                     </select>
                   ) : (
                     <p className="text-gray-900 px-4 py-3 bg-gray-50 rounded-lg">
-                      {getStringOrDefault(user.profile.education, 'وارد نشده')}
+                      {user.profile.education || 'وارد نشده'}
                     </p>
                   )}
                 </div>
@@ -241,10 +218,7 @@ export default function Profile(): React.JSX.Element | null {
                     />
                   ) : (
                     <p className="text-gray-900 px-4 py-3 bg-gray-50 rounded-lg">
-                      {getStringOrDefault(
-                        user.profile.educationField,
-                        'وارد نشده',
-                      )}
+                      {user.profile.educationField || 'وارد نشده'}
                     </p>
                   )}
                 </div>
@@ -268,7 +242,7 @@ export default function Profile(): React.JSX.Element | null {
                   />
                 ) : (
                   <p className="text-gray-900 px-4 py-3 bg-gray-50 rounded-lg whitespace-pre-wrap">
-                    {getStringOrDefault(user.profile.experience, 'وارد نشده')}
+                    {user.profile.experience || 'وارد نشده'}
                   </p>
                 )}
               </div>

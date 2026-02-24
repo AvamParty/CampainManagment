@@ -6,7 +6,6 @@ import {
   useState,
 } from 'react'
 import { apiRequest, clearTokens, setTokens } from '../api/client'
-import { isValidString } from '../utils/typeGuards'
 
 interface User {
   id: string
@@ -56,7 +55,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 function getInitialUser(): User | null {
   try {
     const stored = localStorage.getItem('campaign_user')
-    return isValidString(stored) ? JSON.parse(stored) : null
+    return stored ? JSON.parse(stored) : null
   } catch {
     return null
   }
