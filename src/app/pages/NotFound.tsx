@@ -1,8 +1,8 @@
-import { useNavigate } from 'react-router';
-import { Home, ArrowRight } from 'lucide-react';
+import { ArrowRight, Home } from 'lucide-react'
+import { useNavigate } from 'react-router'
 
-export default function NotFound() {
-  const navigate = useNavigate();
+export default function NotFound(): React.JSX.Element {
+  const navigate = useNavigate()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
@@ -16,7 +16,7 @@ export default function NotFound() {
             صفحه مورد نظر شما وجود ندارد یا منتقل شده است
           </p>
         </div>
-        
+
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={() => navigate('/')}
@@ -35,5 +35,5 @@ export default function NotFound() {
         </div>
       </div>
     </div>
-  );
+  )
 }

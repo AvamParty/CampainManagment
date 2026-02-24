@@ -1,10 +1,13 @@
-import { Skeleton } from './ui/skeleton';
+import { Skeleton } from './ui/skeleton'
 
-export function DashboardStatsSkeleton() {
+export function DashboardStatsSkeleton(): React.JSX.Element {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       {[...Array(4)].map((_, i) => (
-        <div key={i} className="bg-white/70 backdrop-blur-xl rounded-2xl p-5 md:p-6 shadow-lg border border-white/20">
+        <div
+          key={i}
+          className="bg-white/70 backdrop-blur-xl rounded-2xl p-5 md:p-6 shadow-lg border border-white/20"
+        >
           <div className="flex items-center justify-between mb-4">
             <Skeleton className="w-12 h-12 rounded-xl" />
           </div>
@@ -13,10 +16,10 @@ export function DashboardStatsSkeleton() {
         </div>
       ))}
     </div>
-  );
+  )
 }
 
-export function TaskCardSkeleton() {
+export function TaskCardSkeleton(): React.JSX.Element {
   return (
     <div className="p-4 border-b border-gray-100">
       <div className="flex items-start justify-between gap-3 mb-2">
@@ -30,10 +33,10 @@ export function TaskCardSkeleton() {
         <Skeleton className="h-4 w-20" />
       </div>
     </div>
-  );
+  )
 }
 
-export function TasksListSkeleton() {
+export function TasksListSkeleton(): React.JSX.Element {
   return (
     <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20">
       <div className="p-6 border-b border-gray-100">
@@ -51,10 +54,10 @@ export function TasksListSkeleton() {
         <Skeleton className="h-12 w-full rounded-xl" />
       </div>
     </div>
-  );
+  )
 }
 
-export function MyTasksSkeleton() {
+export function MyTasksSkeleton(): React.JSX.Element {
   return (
     <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20">
       <div className="p-6 border-b border-gray-100">
@@ -66,7 +69,10 @@ export function MyTasksSkeleton() {
       <div className="p-6">
         <div className="space-y-3">
           {[...Array(2)].map((_, i) => (
-            <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+            <div
+              key={i}
+              className="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
+            >
               <div className="flex items-center gap-3">
                 <Skeleton className="w-10 h-10 rounded-xl" />
                 <Skeleton className="h-5 w-24" />
@@ -78,10 +84,10 @@ export function MyTasksSkeleton() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export function AnnouncementCardSkeleton() {
+export function AnnouncementCardSkeleton(): React.JSX.Element {
   return (
     <div className="p-4 border-b border-gray-100">
       <Skeleton className="h-6 w-40 mb-2" />
@@ -89,10 +95,10 @@ export function AnnouncementCardSkeleton() {
       <Skeleton className="h-4 w-3/4 mb-2" />
       <Skeleton className="h-3 w-32" />
     </div>
-  );
+  )
 }
 
-export function AnnouncementsListSkeleton() {
+export function AnnouncementsListSkeleton(): React.JSX.Element {
   return (
     <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20">
       <div className="p-6 border-b border-gray-100">
@@ -110,5 +116,5 @@ export function AnnouncementsListSkeleton() {
         <Skeleton className="h-12 w-full rounded-xl" />
       </div>
     </div>
-  );
+  )
 }

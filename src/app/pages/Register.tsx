@@ -1,70 +1,78 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router';
-import { useAuth } from '../contexts/AuthContext';
-import { User, Phone, Mail, Key, Lock, AlertCircle, CheckCircle } from 'lucide-react';
+import { useState } from 'react'
+import {
+  AlertCircle,
+  CheckCircle,
+  Key,
+  Lock,
+  Mail,
+  Phone,
+  User,
+} from 'lucide-react'
+import { Link, useNavigate } from 'react-router'
+import { useAuth } from '../contexts/AuthContext'
 
-export default function Register() {
+export default function Register(): React.JSX.Element {
   const [formData, setFormData] = useState({
     name: '',
     mobile: '',
     email: '',
     password: '',
     referralCode: '',
-  });
-  const [otp, setOtp] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  
-  const { register } = useAuth();
-  const navigate = useNavigate();
+  })
+  const [otp, setOtp] = useState('')
+  const [otpSent, setOtpSent] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const { register } = useAuth()
+  const navigate = useNavigate()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    });
-  };
+    })
+  }
 
   const handleSendOTP = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+    e.preventDefault()
+
     if (!formData.referralCode) {
-      setError('کد معرف الزامی است');
-      return;
+      setError('کد معرف الزامی است')
+      return
     }
-    
-    setError('');
-    setLoading(true);
-    
+
+    setError('')
+    setLoading(true)
+
     // Mock OTP sending
     setTimeout(() => {
-      setOtpSent(true);
-      setLoading(false);
-      setError('کد تایید: 1234');
-    }, 500);
-  };
+      setOtpSent(true)
+      setLoading(false)
+      setError('کد تایید: 1234')
+    }, 500)
+  }
 
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+    e.preventDefault()
+
     if (otp !== '1234') {
-      setError('کد تایید نادرست است');
-      return;
+      setError('کد تایید نادرست است')
+      return
     }
-    
-    setError('');
-    setLoading(true);
-    
+
+    setError('')
+    setLoading(true)
+
     try {
-      await register(formData);
-      navigate('/');
-    } catch (err: any) {
-      setError(err.message || 'خطا در ثبت‌نام');
+      await register(formData)
+      navigate('/')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'خطا در ثبت‌نام')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-4">
@@ -76,19 +84,29 @@ export default function Register() {
           </div>
 
           {error && (
-            <div className={`mb-4 p-3 border rounded-lg flex items-start gap-2 ${
-              error.includes('1234') 
-                ? 'bg-blue-50 border-blue-200' 
-                : 'bg-red-50 border-red-200'
-            }`}>
+            <div
+              className={`mb-4 p-3 border rounded-lg flex items-start gap-2 ${
+                error.includes('1234')
+                  ? 'bg-blue-50 border-blue-200'
+                  : 'bg-red-50 border-red-200'
+              }`}
+            >
               {error.includes('1234') ? (
-                <CheckCircle size={20} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                <CheckCircle
+                  size={20}
+                  className="text-blue-600 flex-shrink-0 mt-0.5"
+                />
               ) : (
-                <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
+                <AlertCircle
+                  size={20}
+                  className="text-red-600 flex-shrink-0 mt-0.5"
+                />
               )}
-              <p className={`text-sm ${
-                error.includes('1234') ? 'text-blue-800' : 'text-red-800'
-              }`}>
+              <p
+                className={`text-sm ${
+                  error.includes('1234') ? 'text-blue-800' : 'text-red-800'
+                }`}
+              >
                 {error}
               </p>
             </div>
@@ -101,7 +119,10 @@ export default function Register() {
                   نام و نام خانوادگی <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <User size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <User
+                    size={20}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
                   <input
                     type="text"
                     name="name"
@@ -119,7 +140,10 @@ export default function Register() {
                   شماره موبایل <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <Phone size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Phone
+                    size={20}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
                   <input
                     type="tel"
                     name="mobile"
@@ -137,7 +161,10 @@ export default function Register() {
                   ایمیل (اختیاری)
                 </label>
                 <div className="relative">
-                  <Mail size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Mail
+                    size={20}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
                   <input
                     type="email"
                     name="email"
@@ -154,7 +181,10 @@ export default function Register() {
                   رمز عبور <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <Lock size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Lock
+                    size={20}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
                   <input
                     type="password"
                     name="password"
@@ -173,7 +203,10 @@ export default function Register() {
                   کد معرف یا لینک دعوت <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <Key size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Key
+                    size={20}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
                   <input
                     type="text"
                     name="referralCode"
@@ -206,7 +239,7 @@ export default function Register() {
                 <input
                   type="text"
                   value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
+                  onChange={e => setOtp(e.target.value)}
                   placeholder="1234"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-center text-2xl tracking-widest focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   maxLength={4}
@@ -228,9 +261,9 @@ export default function Register() {
               <button
                 type="button"
                 onClick={() => {
-                  setOtpSent(false);
-                  setOtp('');
-                  setError('');
+                  setOtpSent(false)
+                  setOtp('')
+                  setError('')
                 }}
                 className="w-full text-blue-600 hover:text-blue-700 text-sm"
               >
@@ -240,7 +273,10 @@ export default function Register() {
           )}
 
           <div className="mt-6 text-center">
-            <Link to="/login" className="text-blue-600 hover:text-blue-700 text-sm">
+            <Link
+              to="/login"
+              className="text-blue-600 hover:text-blue-700 text-sm"
+            >
               حساب کاربری دارید؟ وارد شوید
             </Link>
           </div>
@@ -256,5 +292,5 @@ export default function Register() {
         </div>
       </div>
     </div>
-  );
+  )
 }
