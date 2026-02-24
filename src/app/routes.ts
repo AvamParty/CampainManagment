@@ -1,14 +1,14 @@
-import { createBrowserRouter, redirect } from 'react-router'
-import AdminPanel from './pages/AdminPanel'
-import Announcements from './pages/Announcements'
-import Dashboard from './pages/Dashboard'
-import Login from './pages/Login'
-import NotFound from './pages/NotFound'
-import Profile from './pages/Profile'
-import Register from './pages/Register'
-import Root from './pages/Root'
-import TaskDetail from './pages/TaskDetail'
-import Tasks from './pages/Tasks'
+import { createBrowserRouter, redirect } from 'react-router';
+import Root from './pages/Root';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import Tasks from './pages/Tasks';
+import TaskDetail from './pages/TaskDetail';
+import Profile from './pages/Profile';
+import Announcements from './pages/Announcements';
+import AdminPanel from './pages/AdminPanel';
+import NotFound from './pages/NotFound';
 
 export const router = createBrowserRouter([
   {
@@ -27,4 +27,4 @@ export const router = createBrowserRouter([
       { path: '*', Component: NotFound },
     ],
   },
-])
+]);
