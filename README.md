@@ -1,15 +1,11 @@
-# Election Campaign Management App
 
-This is a code bundle for Election Campaign Management App. The original project is available at https://www.figma.com/design/ixNucMBWBT3WRuBQCToemb/Election-Campaign-Management-App.
+  # Election Campaign Management App
 
-## Running the code
+  This is a code bundle for Election Campaign Management App. The original project is available at https://www.figma.com/design/ixNucMBWBT3WRuBQCToemb/Election-Campaign-Management-App.
 
-Run `npm i` to install the dependencies.
+  ## Running the code
 
-Copy `.env.example` to `.env`.
+  Run `npm i` to install the dependencies.
 
-Required environment variables:
-
-- `VITE_API_BASE_URL` - backend base URL (must include `/v1`), e.g. `http://localhost:3000/v1`
-
-Run `npm run dev` to start the development server.
+  Run `npm run dev` to start the development server.
+  
