@@ -1,10 +1,11 @@
-import { Home, ListTodo, LogIn, LogOut, Megaphone, Settings, Sparkles, User } from 'lucide-react';
-import { motion } from 'motion/react';
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router';
+import React from 'react';
+import { Outlet, useNavigate, useLocation, Navigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
+import { Home, ListTodo, User, Megaphone, Sparkles, Settings } from 'lucide-react';
+import { motion } from 'motion/react';
 
 export default function Root() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -63,10 +64,11 @@ export default function Root() {
                       key={item.path}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => navigate(item.path)}
-                      className={`relative z-10 flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all ${isAuthenticated && isActive
-                        ? 'text-white'
-                        : 'text-gray-600'
-                        }`}
+                      className={`relative z-10 flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all ${
+                        isActive
+                          ? 'text-white'
+                          : 'text-gray-600'
+                      }`}
                     >
                       <Icon size={20} />
                       <span className="text-[10px]">{item.name}</span>
@@ -78,7 +80,7 @@ export default function Root() {
           </motion.nav>
 
           {/* Desktop Sidebar with Glassmorphism */}
-          <motion.aside
+          <motion.aside 
             initial={{ x: 100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             className="hidden lg:block fixed right-6 top-6 bottom-6 w-72 bg-white/70 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl z-40"
@@ -104,7 +106,7 @@ export default function Root() {
 
             {/* User Card */}
             {user && (
-              <motion.div
+              <motion.div 
                 whileHover={{ scale: 1.02 }}
                 className="relative mb-6 p-5 rounded-2xl bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white overflow-hidden cursor-pointer"
               >
@@ -141,10 +143,11 @@ export default function Root() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => navigate(item.path)}
-                    className={`relative w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all ${isActive
-                      ? 'text-white shadow-lg'
-                      : 'text-gray-700 hover:bg-white/50'
-                      }`}
+                    className={`relative w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all ${
+                      isActive
+                        ? 'text-white shadow-lg'
+                        : 'text-gray-700 hover:bg-white/50'
+                    }`}
                   >
                     {isActive && (
                       <motion.div
@@ -160,64 +163,12 @@ export default function Root() {
               })}
             </nav>
 
-            {/* Logout Button */}
-            {isAuthenticated && (
-              <motion.button
-                initial={{ x: 50, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => {
-                  logout();
-                  navigate('/login');
-                }}
-                className="relative w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all text-red-600 hover:bg-red-50"
-              >
-                <LogOut size={22} />
-                <span className="font-medium">خروج</span>
-              </motion.button>
-            )}
-
           </motion.aside>
         </>
       )}
 
-      {/* Mobile Login Button for Non-Authenticated Users */}
-      {!isAuthenticated && !isPublicRoute && (
-        <div className="lg:hidden fixed bottom-4 left-4 right-4 z-50">
-          <motion.button
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => navigate('/login')}
-            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-2xl shadow-2xl border border-white/20 backdrop-blur-xl"
-          >
-            <LogIn size={20} />
-            <span className="font-medium">ورود به سامانه</span>
-          </motion.button>
-        </div>
-      )}
-
       {/* Main Content */}
       <main className={isAuthenticated ? 'lg:mr-80 lg:ml-6 pb-24 lg:pb-6' : ''}>
-        {/* Login Button for Non-Authenticated Users */}
-        {!isAuthenticated && !isPublicRoute && (
-          <div className="fixed top-6 left-6 z-50">
-            <motion.button
-              initial={{ x: -50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate('/login')}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl shadow-lg hover:shadow-xl transition-all"
-            >
-              <LogIn size={20} />
-              <span className="font-medium">ورود</span>
-            </motion.button>
-          </div>
-        )}
         <Outlet />
       </main>
     </div>

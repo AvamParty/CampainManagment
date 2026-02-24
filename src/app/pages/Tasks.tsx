@@ -1,27 +1,29 @@
-import {
-  Award,
-  Briefcase,
-  Calendar,
-  CheckCircle,
-  Clock,
-  Database,
-  FileText,
-  MapPin,
-  MessageSquare,
-  Palette,
-  Phone,
-  Search,
-  Share2,
-  Target,
-  UserPlus,
-  XCircle,
-  Zap
-} from 'lucide-react';
-import { motion } from 'motion/react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { useTasks } from '../contexts/TaskContext';
+import { useNavigate } from 'react-router';
+import {
+  Search,
+  Filter,
+  Calendar,
+  Award,
+  CheckCircle,
+  Clock,
+  XCircle,
+  MessageSquare,
+  FileText,
+  Database,
+  MapPin,
+  Users,
+  UserPlus,
+  Palette,
+  Share2,
+  Phone,
+  Briefcase,
+  Zap,
+  Target,
+} from 'lucide-react';
+import { motion } from 'motion/react';
 
 const taskTypeIcons = {
   opinion: MessageSquare,
@@ -67,9 +69,9 @@ const taskTypeColors = {
 
 export default function Tasks() {
   const { user } = useAuth();
-  const { tasks, userTasks, isLoading } = useTasks();
+  const { tasks, userTasks } = useTasks();
   const navigate = useNavigate();
-
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'available' | 'my-tasks'>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -115,18 +117,17 @@ export default function Tasks() {
   };
 
   const statusIcons = {
-    'pending': { icon: Clock, color: 'text-gray-600', bg: 'bg-gray-50', gradient: 'from-gray-500 to-gray-600', label: 'در انتظار' },
     'in-progress': { icon: Clock, color: 'text-blue-600', bg: 'bg-blue-50', gradient: 'from-blue-500 to-cyan-500', label: 'در حال انجام' },
     completed: { icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50', gradient: 'from-green-500 to-emerald-500', label: 'تکمیل شده' },
     approved: { icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50', gradient: 'from-green-500 to-emerald-500', label: 'تایید شده' },
-    rejected: { icon: XCircle, color: 'text-red-600', bg: 'bg-red-50', gradient: 'from-red-500 to-rose-500', label: 'رد شده' },
+    rejected: { icon: XCircle, color: 'text-red-600', bg: 'bg-red-50', gradient: 'from-red-500 to-pink-500', label: 'رد شده' },
   };
 
   return (
     <div className="min-h-screen p-4 md:p-6 lg:p-8 lg:pt-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <motion.div
+        <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           className="mb-6"
@@ -145,7 +146,7 @@ export default function Tasks() {
         </motion.div>
 
         {/* Filters */}
-        <motion.div
+        <motion.div 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
@@ -203,7 +204,7 @@ export default function Tasks() {
         </motion.div>
 
         {/* Tasks Grid */}
-        <motion.div
+        <motion.div 
           initial="hidden"
           animate="visible"
           variants={{
@@ -215,22 +216,8 @@ export default function Tasks() {
           }}
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
         >
-          {isLoading ? (
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="col-span-full bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 p-16 text-center"
-            >
-              <motion.div
-                animate={{ rotate: [0, 10, 0, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <Clock size={64} className="mx-auto mb-4 text-gray-300" />
-              </motion.div>
-              <p className="text-gray-500 text-lg font-medium">در حال بارگذاری وظایف...</p>
-            </motion.div>
-          ) : filteredTasks.length === 0 ? (
-            <motion.div
+          {filteredTasks.length === 0 ? (
+            <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               className="col-span-full bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 p-16 text-center"
@@ -263,11 +250,11 @@ export default function Tasks() {
                 >
                   {/* Gradient overlay on hover */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${typeGradient} opacity-0 group-hover:opacity-5 transition-opacity`} />
-
+                  
                   <div className="relative">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <motion.div
+                        <motion.div 
                           whileHover={{ rotate: 360 }}
                           transition={{ duration: 0.5 }}
                           className={`w-12 h-12 bg-gradient-to-br ${typeGradient} rounded-xl flex items-center justify-center shadow-lg`}
@@ -288,12 +275,13 @@ export default function Tasks() {
                     <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">{task.description}</p>
 
                     <div className="flex items-center gap-2 mb-4 flex-wrap">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${task.priority === 'high'
-                        ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white'
-                        : task.priority === 'medium'
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        task.priority === 'high' 
+                          ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white'
+                          : task.priority === 'medium'
                           ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'
                           : 'bg-gray-200 text-gray-700'
-                        }`}>
+                      }`}>
                         {task.priority === 'high' ? 'فوری' : task.priority === 'medium' ? 'متوسط' : 'عادی'}
                       </span>
                       <span className="text-xs text-gray-500 flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
@@ -303,7 +291,7 @@ export default function Tasks() {
                     </div>
 
                     {status && StatusIcon && (
-                      <motion.div
+                      <motion.div 
                         initial={{ scale: 0.9 }}
                         animate={{ scale: 1 }}
                         className={`flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r ${statusIcons[status].gradient}`}
@@ -316,7 +304,7 @@ export default function Tasks() {
                     )}
 
                     {!status && (
-                      <motion.button
+                      <motion.button 
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         className="w-full bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white py-3 rounded-xl text-sm font-bold hover:shadow-xl transition-all"
