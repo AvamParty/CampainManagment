@@ -1,6 +1,6 @@
 import { isNotNull, isValidString } from '../utils/typeGuards'
 
-const API_BASE_URL: string = 'https://diaweb.ir/v1'
+const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL as string
 
 const ACCESS_TOKEN_KEY = 'campaign_access_token'
 const REFRESH_TOKEN_KEY = 'campaign_refresh_token'

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import {
   Briefcase,
+  Check,
+  Copy,
   Edit,
   GraduationCap,
   LogOut,
@@ -8,15 +10,27 @@ import {
   Save,
   Star,
   Tag,
+  Users,
+  XCircle,
 } from 'lucide-react'
 import { useNavigate } from 'react-router'
+import { apiRequest } from '../api/client'
 import { useAuth } from '../contexts/AuthContext'
 import { getStringOrDefault, isValidString } from '../utils/typeGuards'
+
+interface ReferralStats {
+  referralCode: string
+  referralCodeActive: boolean
+  invitedCount: number
+  pointsFromReferrals: number
+}
 
 export default function Profile(): React.JSX.Element | null {
   const { user, updateProfile, logout } = useAuth()
   const navigate = useNavigate()
   const [isEditing, setIsEditing] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [referralStats, setReferralStats] = useState<ReferralStats | null>(null)
   const [formData, setFormData] = useState({
     neighborhood: '',
     education: '',
@@ -25,6 +39,12 @@ export default function Profile(): React.JSX.Element | null {
     skills: '',
     interests: '',
   })
+
+  useEffect(() => {
+    void apiRequest<ReferralStats>('/users/me/referral-stats')
+      .then(setReferralStats)
+      .catch(() => undefined)
+  }, [])
 
   useEffect(() => {
     if (user) {
@@ -70,6 +90,13 @@ export default function Profile(): React.JSX.Element | null {
   const handleLogout = () => {
     logout()
     navigate('/login')
+  }
+
+  const handleCopyReferralCode = () => {
+    void navigator.clipboard.writeText(user?.referralCode ?? '').then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
   }
 
   return (
@@ -364,6 +391,71 @@ export default function Profile(): React.JSX.Element | null {
             )}
           </div>
         </form>
+
+        {/* Referral Section */}
+        <div className="mt-6 bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
+          <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <Users size={20} className="text-blue-600" />
+            دعوت از دوستان
+          </h3>
+
+          {/* Referral code + status */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
+            <div className="flex-1">
+              <p className="text-sm text-gray-500 mb-1">کد معرف شخصی شما</p>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-lg font-bold text-gray-900 bg-gray-50 px-4 py-2 rounded-lg border border-gray-200">
+                  {user.referralCode}
+                </span>
+                <button
+                  onClick={handleCopyReferralCode}
+                  className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                  title="کپی کد معرف"
+                >
+                  {copied ? (
+                    <Check size={18} className="text-green-600" />
+                  ) : (
+                    <Copy size={18} className="text-gray-500" />
+                  )}
+                </button>
+              </div>
+            </div>
+            <div>
+              {referralStats?.referralCodeActive ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm font-medium">
+                  <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
+                  فعال
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-700 rounded-full text-sm font-medium">
+                  <XCircle size={14} />
+                  غیرفعال توسط ادمین
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Stats row */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-blue-50 rounded-xl p-4 text-center">
+              <p className="text-3xl font-bold text-blue-700 mb-1">
+                {referralStats?.invitedCount ?? 0}
+              </p>
+              <p className="text-sm text-gray-600">افراد دعوت‌شده</p>
+            </div>
+            <div className="bg-yellow-50 rounded-xl p-4 text-center">
+              <p className="text-3xl font-bold text-yellow-600 mb-1">
+                {referralStats?.pointsFromReferrals ?? 0}
+              </p>
+              <p className="text-sm text-gray-600">امتیاز از معرفی</p>
+            </div>
+          </div>
+
+          <p className="mt-4 text-xs text-gray-500 text-center">
+            به ازای هر نفری که با کد معرف شما ثبت‌نام کند، ۱۰۰ امتیاز دریافت
+            می‌کنید.
+          </p>
+        </div>
       </div>
     </div>
   )
