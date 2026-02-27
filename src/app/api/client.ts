@@ -1,4 +1,5 @@
 import { isNotNull, isValidString } from '../utils/typeGuards'
+import type { OtpPurpose, UserRole } from '../../types'
 
 // Import User type from AuthContext
 type User = {
@@ -6,7 +7,7 @@ type User = {
   name: string
   mobile: string
   email?: string
-  role: 'user' | 'admin' | 'manager'
+  role: UserRole
   profile: {
     neighborhood?: string
     education?: string
@@ -50,7 +51,7 @@ export function clearTokens(): void {
 // OTP API functions
 export async function sendOTP(
   phone: string,
-  purpose: 'login' | 'register' | 'reset',
+  purpose: OtpPurpose,
 ): Promise<{ message: string; otp?: string }> {
   const response = await fetch(`${API_BASE_URL}/auth/otp/send`, {
     method: 'POST',
@@ -72,7 +73,7 @@ export async function sendOTP(
 export async function verifyOTP(
   phone: string,
   otp: string,
-  purpose: 'login' | 'register' | 'reset',
+  purpose: OtpPurpose,
 ): Promise<{
   user: User
   accessToken: string

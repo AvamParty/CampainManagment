@@ -14,13 +14,14 @@ import {
   verifyOTP as verifyOTPApi,
 } from '../api/client'
 import { isValidString } from '../utils/typeGuards'
+import type { OtpPurpose, UserRole } from '../../types'
 
 interface User {
   id: string
   name: string
   mobile: string
   email?: string
-  role: 'user' | 'admin' | 'manager'
+  role: UserRole
   profile: {
     neighborhood?: string
     education?: string
@@ -130,10 +131,7 @@ export function AuthProvider({
     localStorage.setItem('campaign_user', JSON.stringify(response.user))
   }
 
-  const sendOTP = async (
-    phone: string,
-    purpose: 'login' | 'register' | 'reset',
-  ) => {
+  const sendOTP = async (phone: string, purpose: OtpPurpose) => {
     return await sendOTPApi(phone, purpose)
   }
 
