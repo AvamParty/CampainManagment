@@ -2,6 +2,7 @@ import { createBrowserRouter, redirect } from 'react-router'
 import AdminPanel from './pages/AdminPanel'
 import Announcements from './pages/Announcements'
 import Dashboard from './pages/Dashboard'
+import ForgotPassword from './pages/ForgotPassword'
 import Login from './pages/Login'
 import NotFound from './pages/NotFound'
 import Profile from './pages/Profile'
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
       { path: 'dashboard', Component: Dashboard },
       { path: 'login', Component: Login },
       { path: 'register', Component: Register },
+      { path: 'forgot-password', Component: ForgotPassword },
       { path: 'tasks', Component: Tasks },
       { path: 'tasks/:taskId', Component: TaskDetail },
       { path: 'profile', Component: Profile },

@@ -16,7 +16,6 @@ export default function Register(): React.JSX.Element {
     name: '',
     mobile: '',
     email: '',
-    password: '',
     referralCode: '',
   })
   const [otp, setOtp] = useState('')
@@ -24,7 +23,7 @@ export default function Register(): React.JSX.Element {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const { register } = useAuth()
+  const { registerWithOTP, sendOTP } = useAuth()
   const navigate = useNavigate()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,19 +44,31 @@ export default function Register(): React.JSX.Element {
     setError('')
     setLoading(true)
 
-    // Mock OTP sending
-    setTimeout(() => {
+    try {
+      const response = await sendOTP(formData.mobile, 'register')
       setOtpSent(true)
+      // If OTP is included in response (mock mode), show it to user
+      if (
+        response.otp !== null &&
+        response.otp !== undefined &&
+        response.otp.length > 0
+      ) {
+        setError(`کد تایید: ${response.otp}`)
+      } else {
+        setError('کد تایید ارسال شد')
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'خطا در ارسال کد تایید')
+    } finally {
       setLoading(false)
-      setError('کد تایید: 1234')
-    }, 500)
+    }
   }
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (otp !== '1234') {
-      setError('کد تایید نادرست است')
+    if (!otp) {
+      setError('کد تایید الزامی است')
       return
     }
 
@@ -65,8 +76,8 @@ export default function Register(): React.JSX.Element {
     setLoading(true)
 
     try {
-      await register(formData)
-      navigate('/')
+      await registerWithOTP(formData.mobile, otp, formData.name, formData.email)
+      navigate('/tasks')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'خطا در ثبت‌نام')
     } finally {

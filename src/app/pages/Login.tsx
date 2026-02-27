@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react'
 import { AlertCircle, Lock, Phone, Shield, Sparkles, Zap } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -38,7 +38,7 @@ export default function Login(): React.JSX.Element {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const { login, loginWithOTP } = useAuth()
+  const { login, loginWithOTP, sendOTP } = useAuth()
   const navigate = useNavigate()
 
   const handlePasswordLogin = async (e: React.FormEvent) => {
@@ -61,12 +61,24 @@ export default function Login(): React.JSX.Element {
     setError('')
     setLoading(true)
 
-    // Mock OTP sending
-    setTimeout(() => {
+    try {
+      const response = await sendOTP(mobile, 'login')
       setOtpSent(true)
+      // If OTP is included in response (mock mode), show it to user
+      if (
+        response.otp !== null &&
+        response.otp !== undefined &&
+        response.otp.length > 0
+      ) {
+        setError(`کد تایید: ${response.otp}`)
+      } else {
+        setError('کد تایید ارسال شد')
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'خطا در ارسال کد تایید')
+    } finally {
       setLoading(false)
-      setError('کد تایید: 1234')
-    }, 500)
+    }
   }
 
   const handleOTPLogin = async (e: React.FormEvent) => {
@@ -360,6 +372,16 @@ export default function Login(): React.JSX.Element {
                 )}
               </motion.div>
             )}
+          </div>
+
+          {/* Forgot Password Link */}
+          <div className="mt-4 text-center">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-[#667eea] hover:text-[#764ba2] transition-colors font-medium"
+            >
+              رمز عبور خود را فراموش کرده‌اید؟
+            </Link>
           </div>
 
           {/* Demo Credentials */}

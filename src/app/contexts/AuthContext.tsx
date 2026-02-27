@@ -5,7 +5,14 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { apiRequest, clearTokens, setTokens } from '../api/client'
+import {
+  apiRequest,
+  clearTokens,
+  registerWithOTP as registerWithOTPApi,
+  sendOTP as sendOTPApi,
+  setTokens,
+  verifyOTP as verifyOTPApi,
+} from '../api/client'
 import { isValidString } from '../utils/typeGuards'
 
 interface User {
@@ -47,9 +54,19 @@ interface AuthContextType {
   user: User | null
   login: (mobile: string, password: string) => Promise<void>
   loginWithOTP: (mobile: string, otp: string) => Promise<void>
-  logout: () => void
+  sendOTP: (
+    phone: string,
+    purpose: 'login' | 'register' | 'reset',
+  ) => Promise<{ message: string; otp?: string }>
   register: (data: RegisterData) => Promise<void>
+  registerWithOTP: (
+    phone: string,
+    otp: string,
+    name: string,
+    email?: string,
+  ) => Promise<void>
   updateProfile: (data: UpdateProfileData) => Promise<void>
+  logout: () => void
   isAuthenticated: boolean
 }
 
@@ -103,8 +120,36 @@ export function AuthProvider({
     localStorage.setItem('campaign_user', JSON.stringify(response.user))
   }
 
-  const loginWithOTP = async (_mobile: string, _otp: string) => {
-    throw new Error('ورود با کد یکبار مصرف هنوز فعال نشده است')
+  const loginWithOTP = async (mobile: string, otp: string) => {
+    const response = await verifyOTPApi(mobile, otp, 'login')
+    setTokens({
+      accessToken: response.accessToken,
+      refreshToken: response.refreshToken,
+    })
+    setUser(response.user)
+    localStorage.setItem('campaign_user', JSON.stringify(response.user))
+  }
+
+  const sendOTP = async (
+    phone: string,
+    purpose: 'login' | 'register' | 'reset',
+  ) => {
+    return await sendOTPApi(phone, purpose)
+  }
+
+  const registerWithOTP = async (
+    phone: string,
+    otp: string,
+    name: string,
+    email?: string,
+  ) => {
+    const response = await registerWithOTPApi(phone, otp, name, email)
+    setTokens({
+      accessToken: response.accessToken,
+      refreshToken: response.refreshToken,
+    })
+    setUser(response.user)
+    localStorage.setItem('campaign_user', JSON.stringify(response.user))
   }
 
   const register = async (data: RegisterData) => {
@@ -150,9 +195,11 @@ export function AuthProvider({
         user,
         login,
         loginWithOTP,
-        logout,
+        sendOTP,
         register,
+        registerWithOTP,
         updateProfile,
+        logout,
         isAuthenticated: !!user,
       }}
     >
