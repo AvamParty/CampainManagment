@@ -25,6 +25,7 @@ interface User {
   }
   points: number
   referralCode: string
+  invitedByUserId?: string | null
 }
 
 interface RegisterData {
@@ -32,6 +33,7 @@ interface RegisterData {
   password: string
   name: string
   email?: string
+  referralCode: string
 }
 
 interface UpdateProfileData {
